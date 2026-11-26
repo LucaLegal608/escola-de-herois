@@ -22,7 +22,7 @@ def carregar_perguntas():
     for arq in arquivos:
         try:
             df_temp = pd.read_csv(arq, sep=";", encoding="utf-8", on_bad_lines="skip")
-            df_temp.columns = df_temp.columns.str.strip()
+            df_temp.columns = df_temp.columns.str.strip().str.lower()
             for col in df_temp.select_dtypes(include="object").columns:
                 df_temp[col] = df_temp[col].astype(str).str.strip()
             listas.append(df_temp)
@@ -67,7 +67,7 @@ esquadrao_sel = st.sidebar.selectbox(
     "Esquadrão:",
     ["Cadetes (6 a 10 anos)", "Guardiões (11 a 16 anos)"]
 )
-filtro_esq = "Cadetes" if "Cadetes" in esquadrao_sel else "Guardiões"
+filtro_esq = "cadet" if "Cadetes" in esquadrao_sel else "guard"
 
 st.sidebar.metric("Pontos de XP", st.session_state.xp)
 menu = st.sidebar.radio(
@@ -98,13 +98,14 @@ else:
     if df_perguntas.empty:
         st.error("Nenhum arquivo CSV encontrado na raiz do repositório.", icon=":material/error:")
     else:
+        prefixo_missao = menu[:3].lower()
         sub_df = df_perguntas[
-            (df_perguntas["esquadrao"] == filtro_esq) &
-            (df_perguntas["missao"] == menu)
+            (df_perguntas["esquadrao"].str.lower().str.startswith(filtro_esq)) &
+            (df_perguntas["missao"].str.lower().str.startswith(prefixo_missao))
         ].reset_index(drop=True)
 
         if sub_df.empty:
-            st.warning(f"Nenhuma pergunta encontrada para {filtro_esq} em {menu}.", icon=":material/info:")
+            st.warning(f"Nenhuma pergunta encontrada para {esquadrao_sel} em {menu}.", icon=":material/info:")
         else:
             idx = st.session_state.indice_q % len(sub_df)
             q = sub_df.iloc[idx]
