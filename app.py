@@ -67,7 +67,7 @@ menu = st.sidebar.radio(
 )
 
 if menu == "Quartel-General":
-    col1, col2 = st.columns()
+    col1, col2 = st.columns(2)
     with col1:
         st.markdown(f"# :material/castle: Quartel-General de {nome_heroi}")
         st.write("Escolha uma missão no menu ao lado para treinar suas habilidades e ganhar XP.")
