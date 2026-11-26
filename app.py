@@ -14,13 +14,9 @@ st.set_page_config(
 
 localS = LocalStorage()
 
-# Memória global compartilhada entre TODOS os jogadores online simultaneamente
 @st.cache_resource
 def obter_arena_global():
-    return {
-        "ranking": {},
-        "recordes_relampago": []
-    }
+    return {"ranking": {}, "recordes_relampago": []}
 
 arena = obter_arena_global()
 
@@ -187,8 +183,7 @@ if st.sidebar.button("Zerar Progresso Salvo", icon=":material/delete:"):
 
 if menu == "Arena Online: Desafio 60s":
     st.markdown(f"# :material/sports_esports: Arena Relâmpago Online — {esquadrao_sel}")
-    st.write("Responda o máximo de perguntas mistas em **60 segundos** para disputar o placar online contra outros heróis!")
-
+    st.write("Responda o máximo de perguntas mistas em **60 segundos** para disputar o placar online!")
     sub_esq = df_perguntas[df_perguntas["esquadrao"].str.lower().str.startswith(filtro_esq)].reset_index(drop=True)
 
     if sub_esq.empty:
@@ -196,19 +191,19 @@ if menu == "Arena Online: Desafio 60s":
     elif not st.session_state.relampago_ativo:
         with st.container(border=True):
             st.subheader("Pronto para entrar na Arena?")
-            st.write("Cada acerto vale **+10 pontos** na Arena e **+10 XP** no seu perfil. Cada erro desconta **-5 pontos**.")
+            st.write("Cada acerto vale **+10 pontos** e **+10 XP**. Cada erro desconta **-5 pontos**.")
             if st.button("Iniciar Desafio de 60 Segundos", icon=":material/play_arrow:"):
                 st.session_state.relampago_ativo = True
                 st.session_state.relampago_inicio = time.time()
                 st.session_state.relampago_pontos = 0
-                st.session_state.relampago_q = sub_esq.sample(1).iloc[0]
+                st.session_state.relampago_q = sub_esq.sample(1).iloc
                 st.rerun()
     else:
         @st.fragment(run_every=1)
         def cronometro_arena():
             restante = max(0, int(60 - (time.time() - st.session_state.relampago_inicio)))
             if restante > 0:
-                st.warning(f"Tempo da Arena: **{restante}s** | Pontos nesta rodada: **{st.session_state.relampago_pontos}**", icon=":material/timer:")
+                st.warning(f"Tempo: **{restante}s** | Pontos: **{st.session_state.relampago_pontos}**", icon=":material/timer:")
             else:
                 st.session_state.relampago_ativo = False
                 arena["recordes_relampago"].append({
@@ -222,7 +217,7 @@ if menu == "Arena Online: Desafio 60s":
         with st.container(border=True):
             cronometro_arena()
             q_ar = st.session_state.relampago_q
-            st.caption(f"Categoria sorteada: **{q_ar['missao']}**")
+            st.caption(f"Categoria: **{q_ar['missao']}**")
             st.subheader(q_ar["pergunta"])
 
             correta_ar = str(q_ar["correta"]).strip()
@@ -243,13 +238,11 @@ if menu == "Arena Online: Desafio 60s":
                     else:
                         st.session_state.relampago_pontos = max(0, st.session_state.relampago_pontos - 5)
                         st.session_state.xp = max(0, st.session_state.xp - 5)
-                    st.session_state.relampago_q = sub_esq.sample(1).iloc[0]
+                    st.session_state.relampago_q = sub_esq.sample(1).iloc
                     st.rerun()
 
 elif menu == "Ranking Global Online":
     st.markdown("# :material/leaderboard: Ranking Global em Tempo Real")
-    st.write("Veja a classificação dos jogadores conectados na Escola de Heróis!")
-
     if st.button("Atualizar Placar Online", icon=":material/refresh:"):
         salvar_progresso(nome_heroi, esquadrao_sel)
         st.rerun()
@@ -271,11 +264,11 @@ elif menu == "Ranking Global Online":
             df_rec.index = df_rec.index + 1
             st.dataframe(df_rec, use_container_width=True)
         else:
-            st.info("Nenhuma partida de 60s finalizada ainda. Seja o primeiro!", icon=":material/sports_esports:")
+            st.info("Nenhuma partida de 60s finalizada ainda!", icon=":material/sports_esports:")
 
 else:
     st.markdown(f"# :material/bolt: {menu} — {esquadrao_sel}")
-    st.caption(f"Herói ativo: **{nome_heroi}** | Patente: **{patente_atual}** | Combo atual: **{st.session_state.combo}x**")
+    st.caption(f"Herói: **{nome_heroi}** | Patente: **{patente_atual}** | Combo: **{st.session_state.combo}x**")
 
     if df_perguntas.empty:
         st.error("Nenhum arquivo CSV encontrado na raiz do repositório.", icon=":material/error:")
@@ -340,6 +333,45 @@ else:
                 with col_top2:
                     exibir_cronometro()
 
-                escolha = st.radio(
-                    q["pergunta"],
+                escolha = st.radio(q["pergunta"], st.session_state.opcoes_formatadas, key=f"rad_{id_questao}", disabled=st.session_state.respondida)
 
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("Confirmar Resposta", icon=":material/check_circle:", disabled=st.session_state.respondida):
+                        st.session_state.respondida = True
+                        texto_escolhido = escolha[3:].strip()
+                        correta_da_vez = st.session_state.resposta_certa_atual
+                        if texto_escolhido == correta_da_vez:
+                            st.session_state.combo += 1
+                            bonus = min(15, (st.session_state.combo - 1) * 3)
+                            ganho = 15 + bonus
+                            st.session_state.xp += ganho
+                            st.session_state.feedback_tipo = "acerto"
+                            st.session_state.feedback_msg = f"Excelente! {q['explicacao']} (+{ganho} XP | Combo {st.session_state.combo}x)"
+                        else:
+                            st.session_state.combo = 0
+                            st.session_state.xp = max(0, st.session_state.xp - 10)
+                            st.session_state.feedback_tipo = "erro"
+                            st.session_state.feedback_msg = f"Resposta incorreta! A correta era: {correta_da_vez} (-10 XP). {q['explicacao']}"
+                        salvar_progresso(nome_heroi, esquadrao_sel)
+                        st.rerun()
+                with col2:
+                    if st.button("Próxima Pergunta", icon=":material/arrow_forward:"):
+                        st.session_state.indice_q += 1
+                        salvar_progresso(nome_heroi, esquadrao_sel)
+                        st.rerun()
+
+                if st.session_state.feedback_tipo == "acerto":
+                    col_f1, col_f2 = st.columns(2)
+                    with col_f1:
+                        st.success(st.session_state.feedback_msg, icon=":material/verified:")
+                    with col_f2:
+                        if ANIM_CERTO:
+                            st_lottie(ANIM_CERTO, height=110, key=f"ok_{id_questao}")
+                elif st.session_state.feedback_tipo == "erro":
+                    col_f1, col_f2 = st.columns(2)
+                    with col_f1:
+                        st.error(st.session_state.feedback_msg, icon=":material/warning:")
+                    with col_f2:
+                        if ANIM_ERRADO:
+                            st_lottie(ANIM_ERRADO, height=110, key=f"err_{id_questao}")
