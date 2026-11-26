@@ -9,13 +9,15 @@ st.set_page_config(
     layout="wide"
 )
 
-@st.cache_data
 def carregar_perguntas():
     arquivos = ["defesa_pessoal.csv", "seguranca_digital.csv", "outras_materias.csv"]
     listas = []
     for arq in arquivos:
         try:
             df_temp = pd.read_csv(arq, sep=";", encoding="utf-8", on_bad_lines="skip")
+            df_temp.columns = df_temp.columns.str.strip()
+            for col in df_temp.select_dtypes(include="object").columns:
+                df_temp[col] = df_temp[col].astype(str).str.strip()
             listas.append(df_temp)
         except Exception:
             pass
@@ -79,7 +81,7 @@ if menu == "Quartel-General":
 else:
     st.markdown(f"# :material/health_and_safety: Missão: {menu}")
     if df_perguntas.empty:
-        st.error("Nenhum arquivo de perguntas encontrado no repositório.", icon=":material/error:")
+        st.error("Nenhum arquivo CSV encontrado na raiz do repositório.", icon=":material/error:")
     else:
         sub_df = df_perguntas[
             (df_perguntas["esquadrao"] == filtro_esq) &
@@ -87,7 +89,7 @@ else:
         ].reset_index(drop=True)
 
         if sub_df.empty:
-            st.warning("Nenhuma pergunta cadastrada nesta categoria ainda.", icon=":material/info:")
+            st.warning(f"Nenhuma pergunta encontrada para {filtro_esq} em {menu}.", icon=":material/info:")
         else:
             idx = st.session_state.indice_q % len(sub_df)
             q = sub_df.iloc[idx]
