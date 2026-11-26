@@ -78,6 +78,7 @@ for chave, valor in {
     "xp": 0,
     "indice_q": 0,
     "inicio_tempo": time.time(),
+    "respondida": False,
     "feedback_tipo": None,
     "feedback_msg": "",
     "chave_atual": "",
@@ -133,6 +134,7 @@ else:
         if st.session_state.chave_atual != id_questao:
             st.session_state.chave_atual = id_questao
             st.session_state.inicio_tempo = time.time()
+            st.session_state.respondida = False
             st.session_state.feedback_tipo = None
 
             correta_orig = str(q["correta"]).strip()
@@ -155,12 +157,13 @@ else:
         def exibir_cronometro():
             tempo_limite = 30
             restante = max(0, int(tempo_limite - (time.time() - st.session_state.inicio_tempo)))
-            if restante > 0 and st.session_state.feedback_tipo is None:
+            if restante > 0 and not st.session_state.respondida:
                 st.info(f"Tempo: **{restante}s**", icon=":material/timer:")
-            elif restante == 0 and st.session_state.feedback_tipo is None:
+            elif restante == 0 and not st.session_state.respondida:
+                st.session_state.respondida = True
                 st.session_state.xp = max(0, st.session_state.xp - 10)
                 st.session_state.feedback_tipo = "erro"
-                st.session_state.feedback_msg = "Tempo esgotado! Você perdeu -10 XP."
+                st.session_state.feedback_msg = f"Tempo esgotado! A resposta certa era: {st.session_state.resposta_certa_atual} (-10 XP)"
                 st.rerun()
 
         with st.container(border=True):
@@ -170,23 +173,33 @@ else:
             with col_top2:
                 exibir_cronometro()
 
-            escolha = st.radio(q["pergunta"], st.session_state.opcoes_formatadas, key=f"rad_{id_questao}")
+            # Trava as alternativas assim que o aluno responder (certo ou errado) ou o tempo acabar
+            escolha = st.radio(
+                q["pergunta"],
+                st.session_state.opcoes_formatadas,
+                key=f"rad_{id_questao}",
+                disabled=st.session_state.respondida
+            )
 
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("Confirmar Resposta", icon=":material/check_circle:"):
+                # Botão Confirmar fica desabilitado após a primeira tentativa
+                if st.button(
+                    "Confirmar Resposta",
+                    icon=":material/check_circle:",
+                    disabled=st.session_state.respondida
+                ):
+                    st.session_state.respondida = True
                     texto_escolhido = escolha[3:].strip()
                     correta_da_vez = st.session_state.resposta_certa_atual
                     if texto_escolhido == correta_da_vez:
-                        if st.session_state.feedback_tipo != "acerto":
-                            st.session_state.xp += 15
+                        st.session_state.xp += 15
                         st.session_state.feedback_tipo = "acerto"
                         st.session_state.feedback_msg = f"Excelente! {q['explicacao']} (+15 XP)"
                     else:
-                        if st.session_state.feedback_tipo != "erro":
-                            st.session_state.xp = max(0, st.session_state.xp - 10)
+                        st.session_state.xp = max(0, st.session_state.xp - 10)
                         st.session_state.feedback_tipo = "erro"
-                        st.session_state.feedback_msg = f"Resposta incorreta! A correta era: {correta_da_vez} (-10 XP)"
+                        st.session_state.feedback_msg = f"Resposta incorreta! A correta era: {correta_da_vez} (-10 XP). {q['explicacao']}"
                     st.rerun()
             with col2:
                 if st.button("Próxima Pergunta", icon=":material/arrow_forward:"):
