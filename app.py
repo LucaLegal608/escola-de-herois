@@ -12,7 +12,7 @@ st.set_page_config(
 
 @st.cache_data
 def carregar_perguntas():
-    return pd.read_csv("perguntas.csv", sep=";")
+    return pd.read_csv("perguntas.csv", sep=";", on_bad_lines="skip")
 
 def carregar_animacao(url):
     try:
