@@ -10,7 +10,14 @@ st.set_page_config(
 )
 
 def carregar_perguntas():
-    arquivos = ["defesa_pessoal.csv", "seguranca_digital.csv", "outras_materias.csv"]
+    arquivos = [
+        "defesa_pessoal.csv",
+        "seguranca_digital.csv",
+        "logica.csv",
+        "argumentacao.csv",
+        "prototipagem.csv",
+        "outras_materias.csv"
+    ]
     listas = []
     for arq in arquivos:
         try:
@@ -65,7 +72,15 @@ filtro_esq = "Cadetes" if "Cadetes" in esquadrao_sel else "Guardiões"
 st.sidebar.metric("Pontos de XP", st.session_state.xp)
 menu = st.sidebar.radio(
     "Central de Missões:",
-    ["Quartel-General", "Defesa Pessoal", "Segurança Digital", "Outras Matérias"]
+    [
+        "Quartel-General",
+        "Defesa Pessoal",
+        "Segurança Digital",
+        "Lógica",
+        "Argumentação",
+        "Prototipagem Eletrônica",
+        "Outras Matérias"
+    ]
 )
 
 if menu == "Quartel-General":
@@ -79,7 +94,7 @@ if menu == "Quartel-General":
             st_lottie(anim_heroi, height=220, key="hero_anim")
 
 else:
-    st.markdown(f"# :material/health_and_safety: Missão: {menu}")
+    st.markdown(f"# :material/bolt: Missão: {menu}")
     if df_perguntas.empty:
         st.error("Nenhum arquivo CSV encontrado na raiz do repositório.", icon=":material/error:")
     else:
