@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import random
 import requests
 from streamlit_lottie import st_lottie
 
@@ -12,7 +11,17 @@ st.set_page_config(
 
 @st.cache_data
 def carregar_perguntas():
-    return pd.read_csv("perguntas.csv", sep=";", on_bad_lines="skip")
+    arquivos = ["defesa_pessoal.csv", "seguranca_digital.csv", "outras_materias.csv"]
+    listas = []
+    for arq in arquivos:
+        try:
+            df_temp = pd.read_csv(arq, sep=";", encoding="utf-8", on_bad_lines="skip")
+            listas.append(df_temp)
+        except Exception:
+            pass
+    if listas:
+        return pd.concat(listas, ignore_index=True)
+    return pd.DataFrame()
 
 def carregar_animacao(url):
     try:
@@ -49,7 +58,7 @@ esquadrao_sel = st.sidebar.selectbox(
     "Esquadrão:",
     ["Cadetes (6 a 10 anos)", "Guardiões (11 a 16 anos)"]
 )
-filtro_esq = "Cadetes" if "Cadetes" in esquadrao_sel else "Guardioes"
+filtro_esq = "Cadetes" if "Cadetes" in esquadrao_sel else "Guardiões"
 
 st.sidebar.metric("Pontos de XP", st.session_state.xp)
 menu = st.sidebar.radio(
@@ -58,7 +67,7 @@ menu = st.sidebar.radio(
 )
 
 if menu == "Quartel-General":
-    col1, col2 = st.columns([2, 1])
+    col1, col2 = st.columns()
     with col1:
         st.markdown(f"# :material/castle: Quartel-General de {nome_heroi}")
         st.write("Escolha uma missão no menu ao lado para treinar suas habilidades e ganhar XP.")
@@ -69,31 +78,34 @@ if menu == "Quartel-General":
 
 else:
     st.markdown(f"# :material/health_and_safety: Missão: {menu}")
-    sub_df = df_perguntas[
-        (df_perguntas["esquadrao"] == filtro_esq) &
-        (df_perguntas["missao"] == menu)
-    ].reset_index(drop=True)
-
-    if sub_df.empty:
-        st.warning("Nenhuma pergunta cadastrada nesta categoria ainda.", icon=":material/info:")
+    if df_perguntas.empty:
+        st.error("Nenhum arquivo de perguntas encontrado no repositório.", icon=":material/error:")
     else:
-        idx = st.session_state.indice_q % len(sub_df)
-        q = sub_df.iloc[idx]
-        opcoes = [q["opcao1"], q["opcao2"], q["opcao3"]]
+        sub_df = df_perguntas[
+            (df_perguntas["esquadrao"] == filtro_esq) &
+            (df_perguntas["missao"] == menu)
+        ].reset_index(drop=True)
 
-        with st.container(border=True):
-            st.caption(f"Questão {idx + 1} de {len(sub_df)}")
-            escolha = st.radio(q["pergunta"], opcoes, key=f"q_{menu}_{filtro_esq}_{idx}")
+        if sub_df.empty:
+            st.warning("Nenhuma pergunta cadastrada nesta categoria ainda.", icon=":material/info:")
+        else:
+            idx = st.session_state.indice_q % len(sub_df)
+            q = sub_df.iloc[idx]
+            opcoes = [q["opcao1"], q["opcao2"], q["opcao3"]]
 
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("Confirmar Resposta", icon=":material/check_circle:", type="primary"):
-                    if escolha == q["correta"]:
-                        st.session_state.xp += 15
-                        st.success(f"Excelente! {q['explicacao']} (+15 XP)", icon=":material/verified:")
-                    else:
-                        st.error("Atenção! Releia a situação e tente outra opção.", icon=":material/warning:")
-            with col2:
-                if st.button("Próxima Pergunta", icon=":material/arrow_forward:"):
-                    st.session_state.indice_q += 1
-                    st.rerun()
+            with st.container(border=True):
+                st.caption(f"Questão {idx + 1} de {len(sub_df)}")
+                escolha = st.radio(q["pergunta"], opcoes, key=f"q_{menu}_{filtro_esq}_{idx}")
+
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("Confirmar Resposta", icon=":material/check_circle:", type="primary"):
+                        if escolha == q["correta"]:
+                            st.session_state.xp += 15
+                            st.success(f"Excelente! {q['explicacao']} (+15 XP)", icon=":material/verified:")
+                        else:
+                            st.error("Atenção! Releia a situação e tente outra opção.", icon=":material/warning:")
+                with col2:
+                    if st.button("Próxima Pergunta", icon=":material/arrow_forward:"):
+                        st.session_state.indice_q += 1
+                        st.rerun()
