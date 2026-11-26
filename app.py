@@ -337,6 +337,62 @@ else:
                     st.session_state.feedback_msg = f"Tempo esgotado! A resposta certa era: {st.session_state.resposta_certa_atual} (-10 XP)"
                     st.rerun()
 
-            with st.container(border=True):
+                     with st.container(border=True):
                 col_top1, col_top2 = st.columns()
                 with col_top1:
+                    st.progress((idx + 1) / total, text=f"Desafio {idx + 1} de {total}")
+                with col_top2:
+                    exibir_cronometro()
+
+                escolha = st.radio(
+                    q["pergunta"],
+                    st.session_state.opcoes_formatadas,
+                    key=f"rad_{id_questao}",
+                    disabled=st.session_state.respondida
+                )
+
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button(
+                        "Confirmar Resposta",
+                        icon=":material/check_circle:",
+                        disabled=st.session_state.respondida
+                    ):
+                        st.session_state.respondida = True
+                        texto_escolhido = escolha[3:].strip()
+                        correta_da_vez = st.session_state.resposta_certa_atual
+                        if texto_escolhido == correta_da_vez:
+                            st.session_state.combo += 1
+                            bonus = min(15, (st.session_state.combo - 1) * 3)
+                            ganho = 15 + bonus
+                            st.session_state.xp += ganho
+                            st.session_state.feedback_tipo = "acerto"
+                            st.session_state.feedback_msg = f"Excelente! {q['explicacao']} (+{ganho} XP | Combo {st.session_state.combo}x)"
+                        else:
+                            st.session_state.combo = 0
+                            st.session_state.xp = max(0, st.session_state.xp - 10)
+                            st.session_state.feedback_tipo = "erro"
+                            st.session_state.feedback_msg = f"Resposta incorreta! A correta era: {correta_da_vez} (-10 XP). {q['explicacao']}"
+                        salvar_progresso(nome_heroi, esquadrao_sel)
+                        st.rerun()
+                with col2:
+                    if st.button("Próxima Pergunta", icon=":material/arrow_forward:"):
+                        st.session_state.indice_q += 1
+                        salvar_progresso(nome_heroi, esquadrao_sel)
+                        st.rerun()
+
+                if st.session_state.feedback_tipo == "acerto":
+                    col_f1, col_f2 = st.columns()
+                    with col_f1:
+                        st.success(st.session_state.feedback_msg, icon=":material/verified:")
+                    with col_f2:
+                        if ANIM_CERTO:
+                            st_lottie(ANIM_CERTO, height=110, key=f"ok_{id_questao}")
+                elif st.session_state.feedback_tipo == "erro":
+                    col_f1, col_f2 = st.columns()
+                    with col_f1:
+                        st.error(st.session_state.feedback_msg, icon=":material/warning:")
+                    with col_f2:
+                        if ANIM_ERRADO:
+                            st_lottie(ANIM_ERRADO, height=110, key=f"err_{id_questao}")
+
