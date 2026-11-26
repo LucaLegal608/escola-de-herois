@@ -9,6 +9,16 @@ st.set_page_config(
     layout="wide"
 )
 
+def ler_csv_seguro(nome_arquivo):
+    for enc in ["utf-8", "utf-8-sig", "latin-1"]:
+        try:
+            df = pd.read_csv(nome_arquivo, sep=";", encoding=enc, on_bad_lines="skip")
+            if "esquadrao" in [c.strip().lower() for c in df.columns]:
+                return df
+        except Exception:
+            continue
+    return pd.DataFrame()
+
 def carregar_perguntas():
     arquivos = [
         "defesa_pessoal.csv",
@@ -20,14 +30,12 @@ def carregar_perguntas():
     ]
     listas = []
     for arq in arquivos:
-        try:
-            df_temp = pd.read_csv(arq, sep=";", encoding="utf-8", on_bad_lines="skip")
+        df_temp = ler_csv_seguro(arq)
+        if not df_temp.empty:
             df_temp.columns = df_temp.columns.str.strip().str.lower()
             for col in df_temp.select_dtypes(include="object").columns:
                 df_temp[col] = df_temp[col].astype(str).str.strip()
             listas.append(df_temp)
-        except Exception:
-            pass
     if listas:
         return pd.concat(listas, ignore_index=True)
     return pd.DataFrame()
@@ -89,6 +97,9 @@ if menu == "Quartel-General":
         st.markdown(f"# :material/castle: Quartel-General de {nome_heroi}")
         st.write("Escolha uma missão no menu ao lado para treinar suas habilidades e ganhar XP.")
         st.info(f"Banco ativo com {len(df_perguntas)} missões cadastradas.", icon=":material/database:")
+        if not df_perguntas.empty:
+            resumo = df_perguntas.groupby(["missao", "esquadrao"]).size().reset_index(name="Questões")
+            st.dataframe(resumo, hide_index=True, use_container_width=True)
     with col2:
         if anim_heroi:
             st_lottie(anim_heroi, height=220, key="hero_anim")
@@ -96,7 +107,7 @@ if menu == "Quartel-General":
 else:
     st.markdown(f"# :material/bolt: Missão: {menu}")
     if df_perguntas.empty:
-        st.error("Nenhum arquivo CSV encontrado na raiz do repositório.", icon=":material/error:")
+        st.error("Nenhum arquivo CSV válido encontrado na raiz do repositório.", icon=":material/error:")
     else:
         prefixo_missao = menu[:3].lower()
         sub_df = df_perguntas[
