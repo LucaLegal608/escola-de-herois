@@ -196,7 +196,7 @@ if menu == "Arena Online: Desafio 60s":
                 st.session_state.relampago_ativo = True
                 st.session_state.relampago_inicio = time.time()
                 st.session_state.relampago_pontos = 0
-              st.session_state.relampago_q = next(iter(sub_esq.sample(1).to_dict(orient="records")))
+                st.session_state.relampago_q = next(iter(sub_esq.sample(1).to_dict(orient="records")))
                 st.rerun()
     else:
         @st.fragment(run_every=1)
@@ -217,161 +217,30 @@ if menu == "Arena Online: Desafio 60s":
         with st.container(border=True):
             cronometro_arena()
             q_ar = st.session_state.relampago_q
-            st.caption(f"Categoria: **{q_ar['missao']}**")
-            st.subheader(q_ar["pergunta"])
+            if isinstance(q_ar, dict):
+                st.caption(f"Categoria: **{q_ar['missao']}**")
+                st.subheader(q_ar["pergunta"])
 
-            correta_ar = str(q_ar["correta"]).strip()
-            ops_ar = [str(q_ar["opcao1"]).strip(), str(q_ar["opcao2"]).strip(), str(q_ar["opcao3"]).strip()]
-            candidatas = pd.concat([sub_esq["opcao1"], sub_esq["opcao2"], sub_esq["opcao3"]]).dropna().astype(str).str.strip().unique().tolist()
-            extras = [c for c in candidatas if c not in ops_ar and c != "nan"]
-            ops_ar.append(random.choice(extras) if extras else "Pedir ajuda imediata a um adulto")
+                correta_ar = str(q_ar["correta"]).strip()
+                ops_ar = [str(q_ar["opcao1"]).strip(), str(q_ar["opcao2"]).strip(), str(q_ar["opcao3"]).strip()]
+                candidatas = pd.concat([sub_esq["opcao1"], sub_esq["opcao2"], sub_esq["opcao3"]]).dropna().astype(str).str.strip().unique().tolist()
+                extras = [c for c in candidatas if c not in ops_ar and c != "nan"]
+                ops_ar.append(random.choice(extras) if extras else "Pedir ajuda imediata a um adulto")
 
-            random.Random(q_ar["pergunta"]).shuffle(ops_ar)
-            letras = ["a)", "b)", "c)", "d)"]
-            ops_fmt = [f"{letras[i]} {ops_ar[i]}" for i in range(4)]
-
-            for op_texto in ops_fmt:
-                if st.button(op_texto, key=f"ar_{q_ar['pergunta']}_{op_texto}"):
-                    if op_texto[3:].strip() == correta_ar:
-                        st.session_state.relampago_pontos += 10
-                        st.session_state.xp += 10
-                    else:
-                        st.session_state.relampago_pontos = max(0, st.session_state.relampago_pontos - 5)
-                        st.session_state.xp = max(0, st.session_state.xp - 5)
-                    st.session_state.relampago_q = sub_esq.sample(1).iloc
-                    st.rerun()
-
-elif menu == "Ranking Global Online":
-    st.markdown("# :material/leaderboard: Ranking Global em Tempo Real")
-    if st.button("Atualizar Placar Online", icon=":material/refresh:"):
-        salvar_progresso(nome_heroi, esquadrao_sel)
-        st.rerun()
-
-    col_r1, col_r2 = st.columns(2)
-    with col_r1:
-        st.subheader(":material/military_tech: Top XP Geral")
-        if arena["ranking"]:
-            df_rank = pd.DataFrame(list(arena["ranking"].values())).sort_values(by="XP", ascending=False).reset_index(drop=True)
-            df_rank.index = df_rank.index + 1
-            st.dataframe(df_rank, use_container_width=True)
-        else:
-            st.info("Responda a uma missão para registrar seu nome no placar!", icon=":material/info:")
-
-    with col_r2:
-        st.subheader(":material/bolt: Recordes da Arena 60s")
-        if arena["recordes_relampago"]:
-            df_rec = pd.DataFrame(arena["recordes_relampago"]).sort_values(by="Pontos (60s)", ascending=False).head(10).reset_index(drop=True)
-            df_rec.index = df_rec.index + 1
-            st.dataframe(df_rec, use_container_width=True)
-        else:
-            st.info("Nenhuma partida de 60s finalizada ainda!", icon=":material/sports_esports:")
-
-else:
-    st.markdown(f"# :material/bolt: {menu} — {esquadrao_sel}")
-    st.caption(f"Herói: **{nome_heroi}** | Patente: **{patente_atual}** | Combo: **{st.session_state.combo}x**")
-
-    if df_perguntas.empty:
-        st.error("Nenhum arquivo CSV encontrado na raiz do repositório.", icon=":material/error:")
-    else:
-        prefixo_missao = menu[:3].lower()
-        sub_df = df_perguntas[
-            (df_perguntas["esquadrao"].str.lower().str.startswith(filtro_esq)) &
-            (df_perguntas["missao"].str.lower().str.startswith(prefixo_missao))
-        ].reset_index(drop=True)
-
-        if sub_df.empty:
-            st.warning(f"Nenhuma pergunta encontrada para {esquadrao_sel} em {menu}.", icon=":material/info:")
-        else:
-            total = len(sub_df)
-            idx = st.session_state.indice_q % total
-            q = sub_df.iloc[idx]
-            id_questao = f"{menu}_{filtro_esq}_{idx}"
-
-            if st.session_state.chave_atual != id_questao:
-                st.session_state.chave_atual = id_questao
-                st.session_state.inicio_tempo = time.time()
-                st.session_state.respondida = False
-                st.session_state.feedback_tipo = None
-
-                correta_orig = str(q["correta"]).strip()
-                todas_op = [str(q["opcao1"]).strip(), str(q["opcao2"]).strip(), str(q["opcao3"]).strip()]
-                erradas_orig = [op for op in todas_op if op != correta_orig and op != "nan"]
-
-                if "opcao4" in q and pd.notna(q["opcao4"]) and str(q["opcao4"]).strip() not in ["", "nan", correta_orig]:
-                    quarta_op = str(q["opcao4"]).strip()
-                else:
-                    candidatas = pd.concat([sub_df["opcao1"], sub_df["opcao2"], sub_df["opcao3"]]).dropna().astype(str).str.strip().unique().tolist()
-                    candidatas_validas = [c for c in candidatas if c not in todas_op and c != correta_orig and c != "nan"]
-                    quarta_op = random.choice(candidatas_validas) if candidatas_validas else "Consultar um adulto responsável ou professor"
-
-                op_lista = [correta_orig] + erradas_orig[:2] + [quarta_op]
-                st.session_state.resposta_certa_atual = correta_orig
-
-                random.shuffle(op_lista)
+                random.Random(q_ar["pergunta"]).shuffle(ops_ar)
                 letras = ["a)", "b)", "c)", "d)"]
-                st.session_state.opcoes_formatadas = [f"{letras[i]} {op_lista[i]}" for i in range(4)]
+                ops_fmt = [f"{letras[i]} {ops_ar[i]}" for i in range(4)]
 
-            @st.fragment(run_every=1)
-            def exibir_cronometro():
-                tempo_limite = 30
-                restante = max(0, int(tempo_limite - (time.time() - st.session_state.inicio_tempo)))
-                if restante > 0 and not st.session_state.respondida:
-                    st.info(f"Tempo: **{restante}s**", icon=":material/timer:")
-                elif restante == 0 and not st.session_state.respondida:
-                    st.session_state.respondida = True
-                    st.session_state.combo = 0
-                    st.session_state.xp = max(0, st.session_state.xp - 10)
-                    salvar_progresso(nome_heroi, esquadrao_sel)
-                    st.session_state.feedback_tipo = "erro"
-                    st.session_state.feedback_msg = f"Tempo esgotado! A resposta certa era: {st.session_state.resposta_certa_atual} (-10 XP)"
-                    st.rerun()
-
-            with st.container(border=True):
-                col_top1, col_top2 = st.columns(2)
-                with col_top1:
-                    st.progress((idx + 1) / total, text=f"Desafio {idx + 1} de {total}")
-                with col_top2:
-                    exibir_cronometro()
-
-                escolha = st.radio(q["pergunta"], st.session_state.opcoes_formatadas, key=f"rad_{id_questao}", disabled=st.session_state.respondida)
-
-                col1, col2 = st.columns(2)
-                with col1:
-                    if st.button("Confirmar Resposta", icon=":material/check_circle:", disabled=st.session_state.respondida):
-                        st.session_state.respondida = True
-                        texto_escolhido = escolha[3:].strip()
-                        correta_da_vez = st.session_state.resposta_certa_atual
-                        if texto_escolhido == correta_da_vez:
-                            st.session_state.combo += 1
-                            bonus = min(15, (st.session_state.combo - 1) * 3)
-                            ganho = 15 + bonus
-                            st.session_state.xp += ganho
-                            st.session_state.feedback_tipo = "acerto"
-                            st.session_state.feedback_msg = f"Excelente! {q['explicacao']} (+{ganho} XP | Combo {st.session_state.combo}x)"
+                for op_texto in ops_fmt:
+                    if st.button(op_texto, key=f"ar_{q_ar['pergunta']}_{op_texto}"):
+                        if op_texto[3:].strip() == correta_ar:
+                            st.session_state.relampago_pontos += 10
+                            st.session_state.xp += 10
                         else:
-                            st.session_state.combo = 0
-                            st.session_state.xp = max(0, st.session_state.xp - 10)
-                            st.session_state.feedback_tipo = "erro"
-                            st.session_state.feedback_msg = f"Resposta incorreta! A correta era: {correta_da_vez} (-10 XP). {q['explicacao']}"
-                        salvar_progresso(nome_heroi, esquadrao_sel)
+                            st.session_state.relampago_pontos = max(0, st.session_state.relampago_pontos - 5)
+                            st.session_state.xp = max(0, st.session_state.xp - 5)
+                        st.session_state.relampago_q = next(iter(sub_esq.sample(1).to_dict(orient="records")))
                         st.rerun()
-                with col2:
-                    if st.button("Próxima Pergunta", icon=":material/arrow_forward:"):
-                        st.session_state.indice_q += 1
-                        salvar_progresso(nome_heroi, esquadrao_sel)
-                        st.rerun()
-
-                if st.session_state.feedback_tipo == "acerto":
-                    col_f1, col_f2 = st.columns(2)
-                    with col_f1:
-                        st.success(st.session_state.feedback_msg, icon=":material/verified:")
-                    with col_f2:
-                        if ANIM_CERTO:
-                            st_lottie(ANIM_CERTO, height=110, key=f"ok_{id_questao}")
-                elif st.session_state.feedback_tipo == "erro":
-                    col_f1, col_f2 = st.columns(2)
-                    with col_f1:
-                        st.error(st.session_state.feedback_msg, icon=":material/warning:")
-                    with col_f2:
-                        if ANIM_ERRADO:
-                            st_lottie(ANIM_ERRADO, height=110, key=f"err_{id_questao}")
+            else:
+                st.session_state.relampago_ativo = False
+                st.rerun()
