@@ -174,15 +174,18 @@ else:
 
             correta_orig = str(q["correta"]).strip()
             todas_op = [str(q["opcao1"]).strip(), str(q["opcao2"]).strip(), str(q["opcao3"]).strip()]
-            erradas = [op for op in todas_op if op != correta_orig]
-            texto_nenhuma = "Nenhuma das alternativas anteriores"
+            erradas_orig = [op for op in todas_op if op != correta_orig and op != "nan"]
 
-            if random.random() < 0.25 and len(erradas) >= 2:
-                op_lista = [erradas[0], erradas[1], "Outra situação não listada acima", texto_nenhuma]
-                st.session_state.resposta_certa_atual = texto_nenhuma
+            # Busca uma 4ª alternativa real de outras questões da mesma missão (ou coluna opcao4 se existir)
+            if "opcao4" in q and pd.notna(q["opcao4"]) and str(q["opcao4"]).strip() not in ["", "nan", correta_orig]:
+                quarta_op = str(q["opcao4"]).strip()
             else:
-                op_lista = [correta_orig] + erradas[:2] + [texto_nenhuma]
-                st.session_state.resposta_certa_atual = correta_orig
+                candidatas = pd.concat([sub_df["opcao1"], sub_df["opcao2"], sub_df["opcao3"]]).dropna().astype(str).str.strip().unique().tolist()
+                candidatas_validas = [c for c in candidatas if c not in todas_op and c != correta_orig and c != "nan"]
+                quarta_op = random.choice(candidatas_validas) if candidatas_validas else "Consultar um adulto responsável ou professor"
+
+            op_lista = [correta_orig] + erradas_orig[:2] + [quarta_op]
+            st.session_state.resposta_certa_atual = correta_orig
 
             random.shuffle(op_lista)
             letras = ["a)", "b)", "c)", "d)"]
