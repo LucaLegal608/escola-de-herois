@@ -1,0 +1,101 @@
+esquadrao;missao;pergunta;opcao1;opcao2;opcao3;correta;explicacao
+Cadetes;Lógica;Qual número completa a sequência: 2, 4, 6, 8, ...?;9;10;12;10;A sequência soma 2 a cada passo.
+Cadetes;Lógica;Se hoje é segunda-feira, que dia será depois de amanhã?;Terça-feira;Quarta-feira;Quinta-feira;Quarta-feira;Amanhã é terça, depois de amanhã é quarta-feira.
+Cadetes;Lógica;O que pesa mais: 1 quilo de algodão ou 1 quilo de ferro?;O ferro;Os dois pesam exatamente igual;O algodão;Os dois pesam exatamente igual;Ambos têm a mesma massa de 1 quilograma.
+Cadetes;Lógica;João é mais alto que Pedro. Pedro é mais alto que Lucas. Quem é o mais baixo?;João;Pedro;Lucas;Lucas;Se João > Pedro e Pedro > Lucas, Lucas é o menor.
+Cadetes;Lógica;Qual figura não pertence ao grupo: quadrado, triângulo, círculo, banana?;Quadrado;Círculo;Banana;Banana;Banana é uma fruta, enquanto os outros são formas geométricas.
+Cadetes;Lógica;Quantos meses do ano têm 28 dias?;Apenas fevereiro;Todos os 12 meses;Nenhum;Todos os 12 meses;Todos os meses têm pelo menos 28 dias.
+Cadetes;Lógica;Se você tem 3 maçãs e ganha mais 4, mas come 2, com quantas fica?;5 maçãs;7 maçãs;3 maçãs;5 maçãs;3 + 4 = 7, menos 2 = 5 maçãs.
+Cadetes;Lógica;Qual letra vem depois na sequência: A, C, E, G, ...?;H;I;J;I;A sequência pula uma letra do alfabeto a cada passo.
+Cadetes;Lógica;Um pato tem 2 patas. Quantas patas têm 4 patos juntos?;6 patas;8 patas;10 patas;8 patas;4 vezes 2 patas é igual a 8 patas.
+Cadetes;Lógica;Se todo cachorro late e Rex é um cachorro, logo Rex...;Mia;Late;Voa;Late;É uma dedução lógica direta a partir da regra dada.
+Cadetes;Lógica;Qual número está faltando: 10, 20, 30, ___, 50?;35;40;45;40;A sequência avança de 10 em 10.
+Cadetes;Lógica;Em uma corrida, você ultrapassa o segundo colocado. Em que lugar você fica?;Primeiro lugar;Segundo lugar;Terceiro lugar;Segundo lugar;Ao passar quem estava em segundo, você assume a segunda posição.
+Cadetes;Lógica;Quantas rodas têm 3 bicicletas juntas?;3 rodas;6 rodas;9 rodas;6 rodas;Cada bicicleta tem 2 rodas, então 3 x 2 = 6.
+Cadetes;Lógica;Qual palavra é o contrário de Sempre?;Às vezes;Nunca;Talvez;Nunca;Nunca é a negação absoluta de sempre.
+Cadetes;Lógica;Se a caixa azul está à esquerda da caixa vermelha, onde está a vermelha em relação à azul?;À esquerda;À direita;Embaixo;À direita;Se A está à esquerda de B, B está à direita de A.
+Cadetes;Lógica;Qual número vem antes do 100 e depois do 98?;97;99;101;99;O número entre 98 e 100 é 99.
+Cadetes;Lógica;Um relógio marca 3 horas. Que horas marcará daqui a 2 horas?;4 horas;5 horas;6 horas;5 horas;3 + 2 = 5 horas.
+Cadetes;Lógica;Qual intruso não pertence ao grupo: martelo, serrote, chave de fenda, travesseiro?;Martelo;Serrote;Travesseiro;Travesseiro;Travesseiro não é uma ferramenta.
+Cadetes;Lógica;Se ontem foi sábado, que dia é hoje?;Sexta-feira;Domingo;Segunda-feira;Domingo;Depois de sábado vem domingo.
+Cadetes;Lógica;Tenho 4 lados iguais e 4 cantos retos. Quem sou eu?;Triângulo;Quadrado;Círculo;Quadrado;O quadrado possui quatro lados de mesma medida.
+Cadetes;Lógica;Qual número completa: 5, 10, 15, 20, ...?;22;25;30;25;A sequência soma 5 a cada número.
+Cadetes;Lógica;Se nenhuma ave tem dentes e a águia é uma ave, a águia tem dentes?;Sim;Não;Só quando cresce;Não;Pela regra lógica, nenhuma ave possui dentes.
+Cadetes;Lógica;Quantos dedos temos em duas mãos juntas?;5 dedos;10 dedos;20 dedos;10 dedos;5 dedos em cada mão somam 10 dedos.
+Cadetes;Lógica;O pai de Maria tem 3 filhas: Lala, Lele e...;Lili;Maria;Lulu;Maria;O enunciado já diz que ele é o pai de Maria.
+Cadetes;Lógica;Qual número é maior: 45 ou 54?;45;54;São iguais;54;54 possui 5 dezenas, enquanto 45 possui 4 dezenas.
+Cadetes;Lógica;Se você tem 2 pares de sapatos, quantos pés de sapato você tem ao todo?;2 pés;4 pés;6 pés;4 pés;Cada par tem 2 unidades, logo 2 pares equivalem a 4 pés de sapato.
+Cadetes;Lógica;Qual número vem logo depois de 199?;198;200;210;200;Após o 199 vem a centena 200.
+Cadetes;Lógica;Um gato subiu em uma árvore e não consegue descer. Quantos gatos ficaram no chão se havia 3 gatos no quintal?;3 gatos;2 gatos;1 gato;2 gatos;Dos 3 gatos iniciais, 1 subiu na árvore, restando 2 no chão.
+Cadetes;Lógica;Qual forma geométrica tem 3 lados e 3 pontas?;Quadrado;Triângulo;Círculo;Triângulo;Tri significa três, portanto o triângulo tem 3 lados.
+Cadetes;Lógica;Se a água está congelada, ela está quente ou fria?;Quente;Fria;Morna;Fria;A água congela apenas em temperaturas baixas (0 grau Celsius ou menos).
+Cadetes;Lógica;Qual palavra completa a frase: O dia está para o Sol assim como a noite está para a...?;Nuvem;Lua;Chuva;Lua;O Sol aparece durante o dia e a Lua é o astro característico da noite.
+Cadetes;Lógica;Quantas letras tem a palavra HERÓI?;4 letras;5 letras;6 letras;5 letras;H-E-R-Ó-I possui 5 letras.
+Cadetes;Lógica;Se você colocar 5 lápis dentro de um estojo vazio e depois tirar 2, quantos sobram dentro?;2 lápis;3 lápis;5 lápis;3 lápis;5 menos 2 é igual a 3 lápis dentro do estojo.
+Cadetes;Lógica;Qual animal não pertence ao grupo: tubarão, baleia, golfinho, leão?;Tubarão;Baleia;Leão;Leão;Leão é um animal terrestre, os outros vivem no oceano.
+Cadetes;Lógica;Se hoje é sexta-feira, que dia foi ontem?;Quinta-feira;Sábado;Domingo;Quinta-feira;Antes de sexta-feira vem quinta-feira.
+Cadetes;Lógica;Quanto é a metade de 20?;5;10;15;10;Dividir 20 por 2 resulta em 10.
+Cadetes;Lógica;Se todo peixe nada e Nemo é um peixe, o que Nemo sabe fazer?;Voar;Nadar;Correr;Nadar;Pela regra lógica apresentada, Nemo sabe nadar.
+Cadetes;Lógica;Qual número completa: 3, 6, 9, 12, ...?;14;15;18;15;A sequência avança somando 3 a cada passo.
+Cadetes;Lógica;Em uma fila, Ana está na frente de Bruno e Bruno está na frente de Carla. Quem é o primeiro da fila?;Ana;Bruno;Carla;Ana;Ana está à frente de todos os outros na fila.
+Cadetes;Lógica;Quantos dias tem uma semana completa?;5 dias;7 dias;10 dias;7 dias;Domingo, segunda, terça, quarta, quinta, sexta e sábado somam 7 dias.
+Cadetes;Lógica;Qual é o dobro de 9?;16;18;20;18;O dobro de um número é ele multiplicado por 2 (9 x 2 = 18).
+Cadetes;Lógica;Se você apagar a luz do quarto à noite, ele fica claro ou escuro?;Claro;Escuro;Colorido;Escuro;Sem fonte de luz, o ambiente fica escuro.
+Cadetes;Lógica;Qual intruso não pertence ao grupo: camisa, calça, sapato, geladeira?;Camisa;Sapato;Geladeira;Geladeira;Geladeira é um eletrodoméstico, os outros são itens de vestuário.
+Cadetes;Lógica;Quantas patas têm 2 cachorros e 1 passarinho juntos?;8 patas;10 patas;12 patas;10 patas;Dois cachorros têm 8 patas (4+4) e um passarinho tem 2 patas, totalizando 10.
+Cadetes;Lógica;Se o semáforo está vermelho para os carros, eles devem...;Acelerar;Parar;Buzinar;Parar;O sinal vermelho indica parada obrigatória no trânsito.
+Cadetes;Lógica;Qual número é menor: 89 ou 98?;89;98;São iguais;89;89 tem 8 dezenas, sendo menor que 98.
+Cadetes;Lógica;Tenho ponteiros e marco as horas, mas não tenho braços. Quem sou eu?;Espelho;Relógio;Quadro;Relógio;O relógio analógico usa ponteiros para indicar as horas.
+Cadetes;Lógica;Se uma caixa está vazia, quantos brinquedos há dentro dela?;1 brinquedo;0 brinquedos;10 brinquedos;0 brinquedos;Vazia significa ausência de conteúdo (zero).
+Cadetes;Lógica;Qual letra vem antes da letra D no alfabeto?;B;C;E;C;A ordem alfabética é A, B, C, D.
+Cadetes;Lógica;Se você juntar as cores amarelo e azul, qual cor nova aparece?;Roxo;Verde;Laranja;Verde;Amarelo misturado com azul forma a cor verde.
+
+Guardiões;Lógica;Qual número completa a sequência: 1, 1, 2, 3, 5, 8, ...?;11;13;15;13;Sequência de Fibonacci onde cada termo é a soma dos dois anteriores (5 + 8 = 13).
+Guardiões;Lógica;Se todos os humanos são mortais e Sócrates é humano, qual a conclusão válida?;Sócrates é imortal;Sócrates é mortal;Nenhum mortal é humano;Sócrates é mortal;Silogismo clássico onde a propriedade do grupo se aplica ao indivíduo.
+Guardiões;Lógica;Qual número completa a sequência: 2, 6, 18, 54, ...?;108;162;216;162;Progressão geométrica onde cada termo é multiplicado por 3.
+Guardiões;Lógica;Se chove, a rua fica molhada. A rua está seca. O que podemos concluir?;Choveu pouco;Não choveu;Vai chover;Não choveu;Pela contrapositiva lógica, se a consequência não ocorreu, a causa não ocorreu.
+Guardiões;Lógica;Em uma sala há 4 cantos. Em cada canto há 1 gato, e cada gato vê 3 gatos. Quantos gatos há na sala?;4 gatos;12 gatos;16 gatos;4 gatos;Cada um dos 4 gatos vê os outros 3 que estão nos outros cantos.
+Guardiões;Lógica;Qual letra completa: Z, X, V, T, ...?;S;R;Q;R;O alfabeto está retrocedendo pulando uma letra por vez.
+Guardiões;Lógica;Três máquinas fazem 3 peças em 3 minutos. Em quanto tempo 100 máquinas fazem 100 peças?;100 minutos;3 minutos;30 minutos;3 minutos;Cada máquina leva 3 minutos para fazer 1 peça, trabalhando juntas levam os mesmos 3 minutos.
+Guardiões;Lógica;Qual número não pertence à sequência: 4, 9, 16, 20, 25, 36?;16;20;25;20;Todos os outros são quadrados perfeitos (2², 3², 4², 5², 6²).
+Guardiões;Lógica;Se A = 1, B = 2, C = 3, quanto vale a soma das letras da palavra CAB?;5;6;7;6;C(3) + A(1) + B(2) = 6.
+Guardiões;Lógica;Um tijolo pesa 1 kg mais meio tijolo. Quanto pesa um tijolo inteiro?;1,5 kg;2 kg;2,5 kg;2 kg;Se 1 tijolo = 1 kg + 0,5 tijolo, então 0,5 tijolo = 1 kg, logo 1 tijolo = 2 kg.
+Guardiões;Lógica;Qual é a negação lógica da frase: Todos os alunos passaram?;Nenhum aluno passou;Pelo menos um aluno não passou;Todos reprovaram;Pelo menos um aluno não passou;Para negar todos, basta encontrar um único caso em que não ocorreu.
+Guardiões;Lógica;Se 5 gatos caçam 5 ratos em 5 dias, quantos dias 1 gato leva para caçar 1 rato?;1 dia;5 dias;25 dias;5 dias;A taxa individual é de 1 rato por gato a cada 5 dias.
+Guardiões;Lógica;Qual número completa: 100, 95, 85, 70, 50, ...?;30;25;20;25;A subtração aumenta em 5 a cada passo (-5, -10, -15, -20, -25).
+Guardiões;Lógica;Ana fala a verdade. Bia diz que Ana mente. Logo, Bia está...;Falando a verdade;Mentindo;Certa;Mentindo;Se Ana fala a verdade, afirmar que ela mente é falso.
+Guardiões;Lógica;Quantos cortes retos são necessários para dividir uma pizza em 8 fatias iguais?;3 cortes;4 cortes;8 cortes;4 cortes;Com 4 cortes passando pelo centro da pizza obtemos 8 fatias iguais.
+Guardiões;Lógica;Se hoje é quarta-feira, qual dia da semana será daqui a 15 dias?;Quarta-feira;Quinta-feira;Sexta-feira;Quinta-feira;14 dias completam 2 semanas exatas (quarta-feira), mais 1 dia dá quinta-feira.
+Guardiões;Lógica;Qual figura completa a analogia: Círculo está para Esfera assim como Quadrado está para...?;Triângulo;Cubo;Retângulo;Cubo;A esfera é a versão 3D do círculo, e o cubo é a versão 3D do quadrado.
+Guardiões;Lógica;Um caracol sobe 3 metros de dia e escorrega 2 metros à noite em um muro de 5 metros. Em quantos dias chega ao topo?;5 dias;3 dias;4 dias;3 dias;Dia 1 sobe a 1m, Dia 2 sobe a 2m, no Dia 3 sobe 3m e atinge os 5m sem escorregar.
+Guardiões;Lógica;Se Pedro é irmão de Paulo e Paulo é pai de Lucas, o que Pedro é de Lucas?;Avô;Tio;Primo;Tio;O irmão do pai é tio.
+Guardiões;Lógica;Qual valor de X na sequência: 3, 7, 15, 31, X?;47;63;62;63;A regra é multiplicar o anterior por 2 e somar 1 (31 x 2 + 1 = 63).
+Guardiões;Lógica;Em uma gaveta há 10 meias pretas e 10 brancas no escuro. Quantas tirar no mínimo para garantir um par da mesma cor?;2 meias;3 meias;11 meias;3 meias;Pelo princípio da casa dos pombos, com 3 meias pelo menos duas terão a mesma cor.
+Guardiões;Lógica;Se falso OU falso = falso na lógica booleana, quanto é verdadeiro OU falso?;Falso;Verdadeiro;Nulo;Verdadeiro;No operador lógico OU (OR), basta uma condição ser verdadeira para o resultado ser verdadeiro.
+Guardiões;Lógica;Qual palavra não pertence ao grupo: Enigma, Charada, Paradoxo, Martelo?;Enigma;Paradoxo;Martelo;Martelo;Martelo é um objeto físico, os demais são conceitos lógicos.
+Guardiões;Lógica;Se você tem um fósforo e entra em uma sala escura com uma vela, um lampião e uma lareira, o que acende primeiro?;A vela;O fósforo;A lareira;O fósforo;Para acender qualquer outra coisa, é preciso riscar o fósforo primeiro.
+Guardiões;Lógica;Qual número dividido por ele mesmo resulta nele mesmo?;0;1;2;1;1 dividido por 1 é igual a 1.
+Guardiões;Lógica;Se A implica B (Se estudo, então passo) e eu não passei, o que podemos concluir logicamente?;Estudei muito;Não estudei;A prova foi anulada;Não estudei;Pela regra Modus Tollens, a negação do consequente implica a negação do antecedente.
+Guardiões;Lógica;Qual número completa a sequência: 1, 4, 9, 16, 25, ...?;30;36;49;36;São os quadrados dos números naturais: 1², 2², 3², 4², 5², 6² (36).
+Guardiões;Lógica;Em uma corrida de 100 metros, se você ultrapassa o último colocado, em que posição fica?;Penúltimo;É impossível ultrapassar o último;Primeiro;É impossível ultrapassar o último;Não há ninguém atrás do último colocado para poder ultrapassá-lo.
+Guardiões;Lógica;Se nenhum metal é plástico e o ferro é um metal, qual a conclusão certa?;O ferro é plástico;O ferro não é plástico;Alguns plásticos são ferro;O ferro não é plástico;Dedução categórica onde conjuntos disjuntos não compartilham elementos.
+Guardiões;Lógica;Qual é a próxima letra da sequência: D, S, T, Q, Q, S, ...?;D;S;Q;S;São as iniciais dos dias da semana: Domingo, Segunda, Terça, Quarta, Quinta, Sexta, Sábado.
+Guardiões;Lógica;Um pai tem 40 anos e seu filho tem 10. Daqui a quantos anos o pai terá o dobro da idade do filho?;10 anos;20 anos;30 anos;20 anos;Daqui a 20 anos o pai terá 60 e o filho terá 30 (60 é o dobro de 30).
+Guardiões;Lógica;Na lógica proposicional, se P é verdadeiro e Q é falso, qual o valor de P E Q (conjunção)?;Verdadeiro;Falso;Indeterminado;Falso;No operador lógico E (AND), ambas as proposições precisam ser verdadeiras.
+Guardiões;Lógica;Qual número completa: 81, 27, 9, 3, ...?;2;1;0;1;Cada termo é dividido por 3 em relação ao anterior (3 / 3 = 1).
+Guardiões;Lógica;Três amigos dividem uma conta de 30 reais igualmente (10 cada). O garçom devolve 5 reais. Cada um fica com 1 real (gastaram 9 cada = 27) e o garçom guarda 2. Onde está o 1 real que falta?;No caixa;Não falta nada, os 2 reais já estão dentro dos 27;Com o gerente;Não falta nada, os 2 reais já estão dentro dos 27;Dos 27 pagos, 25 ficaram no caixa e 2 com o garçom (25 + 2 = 27, somando 3 devolvidos = 30).
+Guardiões;Lógica;Se é falso que João é rico e feliz, o que é necessariamente verdadeiro?;João é pobre e triste;João não é rico ou não é feliz;João é rico;João não é rico ou não é feliz;Pelas Leis de De Morgan, a negação de A e B é não A ou não B.
+Guardiões;Lógica;Quantos algarismos 9 existem entre os números 1 e 100?;10;19;20;20;São 10 números terminados em 9 (9, 19... 99) mais 10 números na dezena de 90 (90 a 99), somando 20 algarismos 9.
+Guardiões;Lógica;Se todos os médicos são formados e alguns pesquisadores são médicos, logo...;Todos os pesquisadores são médicos;Alguns pesquisadores são formados;Nenhum pesquisador é formado;Alguns pesquisadores são formados;A interseção entre pesquisadores e médicos herda a propriedade de serem formados.
+Guardiões;Lógica;Qual número completa: 2, 3, 5, 7, 11, 13, ...?;15;17;19;17;Sequência dos números primos em ordem crescente.
+Guardiões;Lógica;Dois pais e dois filhos foram pescar, mas pescaram apenas 3 peixes e cada um levou 1 peixe inteiro. Como?;Um peixe sumiu;Eram avô, pai e filho (3 pessoas no total);Dividiram um peixe;Eram avô, pai e filho (3 pessoas no total);O pai do meio é simultaneamente filho do avô e pai do neto.
+Guardiões;Lógica;Qual palavra completa a analogia: Termômetro está para Temperatura assim como Balança está para...?;Altura;Massa;Tempo;Massa;O termômetro mede temperatura e a balança mede massa.
+Guardiões;Lógica;Se hoje choveu e ontem não choveu, a frase Choveu ontem e hoje é...;Verdadeira;Falsa;Parcial;Falsa;Para uma conjunção ser verdadeira, ambas as partes precisam ser verdadeiras.
+Guardiões;Lógica;Em uma caixa há 5 bolas vermelhas e 5 azuis. Qual a probabilidade percentual de tirar uma vermelha ao acaso?;25%;50%;100%;50%;5 bolas favoráveis em um total de 10 resulta em 5/10 = 50%.
+Guardiões;Lógica;Qual número elevado ao quadrado resulta em 144?;11;12;14;12;12 multiplicado por 12 é igual a 144.
+Guardiões;Lógica;Se X > Y e Y = Z, qual afirmação é sempre verdadeira?;Z > X;X > Z;X = Z;X > Z;Por transitividade, se X é maior que Y e Y é igual a Z, X também é maior que Z.
+Guardiões;Lógica;Uma lesma cai em um poço de 10 metros. Sobe 4m de dia e desce 3m à noite. Em quantos dias sai do poço?;10 dias;7 dias;8 dias;7 dias;Após 6 dias está a 6m, no 7º dia sobe 4m, atinge 10m e sai antes de escorregar.
+Guardiões;Lógica;Qual é o próximo termo: J, F, M, A, M, J, ...?;A;J;S;J;Iniciais dos meses do ano: Janeiro, Fevereiro, Março, Abril, Maio, Junho, Julho.
+Guardiões;Lógica;Se a afirmação Nenhum gato voa é verdadeira, qual afirmação também é verdadeira?;Alguns gatos voam;Todos os gatos não voam;Nenhum animal voa;Todos os gatos não voam;Se nenhum elemento do grupo possui a característica, todos os elementos carecem dela.
+Guardiões;Lógica;Quanto é 10% de 10% de 1000?;100;10;1;10;10% de 1000 é 100, e 10% de 100 é igual a 10.
+Guardiões;Lógica;Qual objeto permite ver através de uma parede sólida?;Raio-X;Uma janela;Espelho;Uma janela;A janela é uma abertura projetada exatamente para permitir a visão através da parede.
