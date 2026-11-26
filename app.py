@@ -1,8 +1,8 @@
 import streamlit as st
+import pandas as pd
 import random
 import requests
 from streamlit_lottie import st_lottie
-from perguntas import DEFESA_CADETES, DEFESA_GUARDIOES
 
 st.set_page_config(
     page_title="Escola de Heróis",
@@ -10,15 +10,17 @@ st.set_page_config(
     layout="wide"
 )
 
+@st.cache_data
+def carregar_perguntas():
+    return pd.read_csv("perguntas.csv", sep=";")
+
 def carregar_animacao(url):
     try:
         r = requests.get(url, timeout=5)
-        if r.status_code == 200:
-            return r.json()
+        return r.json() if r.status_code == 200 else None
     except Exception:
         return None
 
-# CSS para deixar botões e cartões mais bonitos
 st.markdown("""
 <style>
 div.stButton > button {
@@ -38,52 +40,60 @@ if "xp" not in st.session_state:
 if "indice_q" not in st.session_state:
     st.session_state.indice_q = 0
 
+df_perguntas = carregar_perguntas()
 anim_heroi = carregar_animacao("https://lottie.host")
 
 st.sidebar.markdown("## :material/shield: Escola de Heróis")
 nome_heroi = st.sidebar.text_input("Codinome:", "Novato")
-esquadrao = st.sidebar.selectbox(
+esquadrao_sel = st.sidebar.selectbox(
     "Esquadrão:",
     ["Cadetes (6 a 10 anos)", "Guardiões (11 a 16 anos)"]
 )
+filtro_esq = "Cadetes" if "Cadetes" in esquadrao_sel else "Guardioes"
 
 st.sidebar.metric("Pontos de XP", st.session_state.xp)
 menu = st.sidebar.radio(
-    "Missões:",
-    ["Quartel-General", "Missão: Defesa Pessoal"]
+    "Central de Missões:",
+    ["Quartel-General", "Defesa Pessoal", "Segurança Digital", "Outras Matérias"]
 )
 
 if menu == "Quartel-General":
     col1, col2 = st.columns([2, 1])
     with col1:
         st.markdown(f"# :material/castle: Quartel-General de {nome_heroi}")
-        st.write("Complete os desafios diários para dominar a defesa pessoal e subir de nível.")
-        st.info("Cada missão sorteia um novo desafio do nosso banco de treinamento.", icon=":material/bolt:")
+        st.write("Escolha uma missão no menu ao lado para treinar suas habilidades e ganhar XP.")
+        st.info(f"Banco ativo com {len(df_perguntas)} missões cadastradas.", icon=":material/database:")
     with col2:
         if anim_heroi:
             st_lottie(anim_heroi, height=220, key="hero_anim")
 
-elif menu == "Missão: Defesa Pessoal":
-    st.markdown("# :material/health_and_safety: Treinamento Tático")
-    banco = DEFESA_CADETES if "Cadetes" in esquadrao else DEFESA_GUARDIOES
-    
-    # Garante que o índice não passe do tamanho da lista
-    idx = st.session_state.indice_q % len(banco)
-    questao = banco[idx]
+else:
+    st.markdown(f"# :material/health_and_safety: Missão: {menu}")
+    sub_df = df_perguntas[
+        (df_perguntas["esquadrao"] == filtro_esq) &
+        (df_perguntas["missao"] == menu)
+    ].reset_index(drop=True)
 
-    with st.container(border=True):
-        st.subheader(f"Desafio #{idx + 1}")
-        escolha = st.radio(questao["pergunta"], questao["opcoes"], key=f"q_{idx}")
+    if sub_df.empty:
+        st.warning("Nenhuma pergunta cadastrada nesta categoria ainda.", icon=":material/info:")
+    else:
+        idx = st.session_state.indice_q % len(sub_df)
+        q = sub_df.iloc[idx]
+        opcoes = [q["opcao1"], q["opcao2"], q["opcao3"]]
 
-        col_btn1, col_btn2 = st.columns(2)
-        with col_btn1:
-            if st.button("Confirmar Resposta", icon=":material/check_circle:", type="primary"):
-                if escolha == questao["correta"]:
-                    st.session_state.xp += 15
-                    st.success(f"Excelente! {questao['explicacao']} (+15 XP)", icon=":material/verified:")
-                else:
-                    st.error("Atenção! Releia a situação e tente outra abordagem.", icon=":material/warning:")
-        with col_btn2:
-            if st.button("Próxima Missão", icon=":material/arrow_forward:"):
-                st.session_state.indice_q = random.randint(0, len(banco) - 1)
-                st.rerun()
+        with st.container(border=True):
+            st.caption(f"Questão {idx + 1} de {len(sub_df)}")
+            escolha = st.radio(q["pergunta"], opcoes, key=f"q_{menu}_{filtro_esq}_{idx}")
+
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("Confirmar Resposta", icon=":material/check_circle:", type="primary"):
+                    if escolha == q["correta"]:
+                        st.session_state.xp += 15
+                        st.success(f"Excelente! {q['explicacao']} (+15 XP)", icon=":material/verified:")
+                    else:
+                        st.error("Atenção! Releia a situação e tente outra opção.", icon=":material/warning:")
+            with col2:
+                if st.button("Próxima Pergunta", icon=":material/arrow_forward:"):
+                    st.session_state.indice_q += 1
+                    st.rerun()
