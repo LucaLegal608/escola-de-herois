@@ -196,7 +196,7 @@ if menu == "Arena Online: Desafio 60s":
                 st.session_state.relampago_ativo = True
                 st.session_state.relampago_inicio = time.time()
                 st.session_state.relampago_pontos = 0
-                st.session_state.relampago_q = sub_esq.sample(1).iloc
+              st.session_state.relampago_q = next(iter(sub_esq.sample(1).to_dict(orient="records")))
                 st.rerun()
     else:
         @st.fragment(run_every=1)
