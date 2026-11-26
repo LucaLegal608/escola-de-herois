@@ -4,12 +4,15 @@ import random
 import time
 import requests
 from streamlit_lottie import st_lottie
+from streamlit_local_storage import LocalStorage
 
 st.set_page_config(
     page_title="Escola de Heróis",
     page_icon=":material/shield:",
     layout="wide"
 )
+
+localS = LocalStorage()
 
 def carregar_animacao(url):
     try:
@@ -74,9 +77,20 @@ def carregar_perguntas():
     listas = [df for df in listas if not df.empty]
     return pd.concat(listas, ignore_index=True) if listas else pd.DataFrame()
 
+# Recupera dados salvos no navegador ao abrir o app
+dados_salvos = localS.getItem("escola_herois_save")
+if isinstance(dados_salvos, dict) and "dados_carregados" not in st.session_state:
+    st.session_state.xp = int(dados_salvos.get("xp", 0))
+    st.session_state.indice_q = int(dados_salvos.get("indice_q", 0))
+    st.session_state.nome_salvo = str(dados_salvos.get("nome", "Novato"))
+    st.session_state.esquadrao_salvo = str(dados_salvos.get("esquadrao", "Cadetes (6 a 10 anos)"))
+    st.session_state.dados_carregados = True
+
 for chave, valor in {
     "xp": 0,
     "indice_q": 0,
+    "nome_salvo": "Novato",
+    "esquadrao_salvo": "Cadetes (6 a 10 anos)",
     "inicio_tempo": time.time(),
     "respondida": False,
     "feedback_tipo": None,
@@ -88,15 +102,28 @@ for chave, valor in {
     if chave not in st.session_state:
         st.session_state[chave] = valor
 
+def salvar_progresso(nome, esquadrao):
+    localS.setItem("escola_herois_save", {
+        "xp": st.session_state.xp,
+        "indice_q": st.session_state.indice_q,
+        "nome": nome,
+        "esquadrao": esquadrao
+    })
+
 df_perguntas = carregar_perguntas()
 
 st.sidebar.markdown("## :material/shield: Escola de Heróis")
-nome_heroi = st.sidebar.text_input("Codinome do Herói:", "Novato")
-esquadrao_sel = st.sidebar.selectbox(
-    "Esquadrão:",
-    ["Cadetes (6 a 10 anos)", "Guardiões (11 a 16 anos)"]
-)
+nome_heroi = st.sidebar.text_input("Codinome do Herói:", value=st.session_state.nome_salvo)
+
+opcoes_esq = ["Cadetes (6 a 10 anos)", "Guardiões (11 a 16 anos)"]
+idx_esq = opcoes_esq.index(st.session_state.esquadrao_salvo) if st.session_state.esquadrao_salvo in opcoes_esq else 0
+esquadrao_sel = st.sidebar.selectbox("Esquadrão:", opcoes_esq, index=idx_esq)
 filtro_esq = "cadet" if "Cadetes" in esquadrao_sel else "guard"
+
+if nome_heroi != st.session_state.nome_salvo or esquadrao_sel != st.session_state.esquadrao_salvo:
+    st.session_state.nome_salvo = nome_heroi
+    st.session_state.esquadrao_salvo = esquadrao_sel
+    salvar_progresso(nome_heroi, esquadrao_sel)
 
 st.sidebar.metric("Pontos de XP", st.session_state.xp)
 menu = st.sidebar.radio(
@@ -111,8 +138,16 @@ menu = st.sidebar.radio(
     ]
 )
 
+st.sidebar.markdown("---")
+if st.sidebar.button("Zerar Progresso Salvo", icon=":material/delete:"):
+    st.session_state.xp = 0
+    st.session_state.indice_q = 0
+    st.session_state.chave_atual = ""
+    localS.deleteAll()
+    st.rerun()
+
 st.markdown(f"# :material/bolt: {menu} — {esquadrao_sel}")
-st.caption(f"Herói ativo: **{nome_heroi}**")
+st.caption(f"Herói ativo: **{nome_heroi}** | Progresso salvo automaticamente no navegador")
 
 if df_perguntas.empty:
     st.error("Nenhum arquivo CSV encontrado na raiz do repositório.", icon=":material/error:")
@@ -162,6 +197,7 @@ else:
             elif restante == 0 and not st.session_state.respondida:
                 st.session_state.respondida = True
                 st.session_state.xp = max(0, st.session_state.xp - 10)
+                salvar_progresso(nome_heroi, esquadrao_sel)
                 st.session_state.feedback_tipo = "erro"
                 st.session_state.feedback_msg = f"Tempo esgotado! A resposta certa era: {st.session_state.resposta_certa_atual} (-10 XP)"
                 st.rerun()
@@ -173,7 +209,6 @@ else:
             with col_top2:
                 exibir_cronometro()
 
-            # Trava as alternativas assim que o aluno responder (certo ou errado) ou o tempo acabar
             escolha = st.radio(
                 q["pergunta"],
                 st.session_state.opcoes_formatadas,
@@ -183,7 +218,6 @@ else:
 
             col1, col2 = st.columns(2)
             with col1:
-                # Botão Confirmar fica desabilitado após a primeira tentativa
                 if st.button(
                     "Confirmar Resposta",
                     icon=":material/check_circle:",
@@ -200,10 +234,12 @@ else:
                         st.session_state.xp = max(0, st.session_state.xp - 10)
                         st.session_state.feedback_tipo = "erro"
                         st.session_state.feedback_msg = f"Resposta incorreta! A correta era: {correta_da_vez} (-10 XP). {q['explicacao']}"
+                    salvar_progresso(nome_heroi, esquadrao_sel)
                     st.rerun()
             with col2:
                 if st.button("Próxima Pergunta", icon=":material/arrow_forward:"):
                     st.session_state.indice_q += 1
+                    salvar_progresso(nome_heroi, esquadrao_sel)
                     st.rerun()
 
             if st.session_state.feedback_tipo == "acerto":
