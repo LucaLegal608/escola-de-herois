@@ -96,7 +96,7 @@ elif menu == "Missão: Defesa Pessoal":
         else:
             st.error("Cuidado! Essa atitude traz riscos. Tente novamente.", icon=":material/warning:")
 
-      elif menu == "Treino Mental (Outras Matérias)":
+elif menu == "Treino Mental (Outras Matérias)":
     st.markdown("# :material/psychology: Academia do Conhecimento")
     st.write("Um herói também domina ciências e lógica (+10 XP).")
 
