@@ -21,14 +21,17 @@ def patente(xp):
 def carregar_dados():
     arqs = ["defesa_pessoal.csv", "seguranca_digital.csv", "logica.csv", "argumentacao.csv", "prototipagem.csv", "outras_materias.csv"]
     dfs = []
+    cols_obrig = ["esquadrao", "missao", "pergunta", "opcao1", "opcao2", "opcao3", "correta"]
     for a in arqs:
         for enc in ["utf-8", "utf-8-sig", "latin-1"]:
             try:
                 d = pd.read_csv(a, sep=";", encoding=enc, on_bad_lines="skip")
-                if "esquadrao" in [c.strip().lower() for c in d.columns]:
-                    d.columns = d.columns.str.strip().str.lower()
-                    for c in d.select_dtypes(include="object").columns:
+                d.columns = d.columns.str.strip().str.lower()
+                if all(c in d.columns for c in cols_obrig):
+                    d = d.dropna(subset=cols_obrig)
+                    for c in cols_obrig:
                         d[c] = d[c].astype(str).str.strip()
+                    d = d[(d["pergunta"] != "") & (d["pergunta"].str.lower() != "nan")]
                     dfs.append(d)
                     break
             except Exception:
@@ -99,8 +102,9 @@ if menu == "Arena Online: Desafio 60s":
         with st.container(border=True):
             timer_ar()
             q = st.session_state.ar_q
-            if isinstance(q, dict):
-                st.markdown(f"**[{q['missao']}]** {q['pergunta']}")
+            if isinstance(q, dict) and str(q.get("pergunta", "")).strip() not in ["", "nan"]:
+                st.caption(f"Categoria: **{q['missao']}**")
+                st.subheader(q["pergunta"])
                 certa = str(q["correta"]).strip()
                 ops = [str(q["opcao1"]).strip(), str(q["opcao2"]).strip(), str(q["opcao3"]).strip()]
                 extras = [c for c in pd.concat([sub["opcao1"], sub["opcao2"], sub["opcao3"]]).dropna().astype(str).str.strip().unique() if c not in ops and c != "nan"]
@@ -118,6 +122,9 @@ if menu == "Arena Online: Desafio 60s":
                                 st.session_state.xp = max(0, st.session_state.xp - 5)
                             st.session_state.ar_q = next(iter(sub.sample(1).to_dict(orient="records")))
                             st.rerun()
+            else:
+                st.session_state.ar_q = next(iter(sub.sample(1).to_dict(orient="records")))
+                st.rerun()
 
 elif menu == "Ranking Global Online":
     st.markdown("## :material/leaderboard: Ranking Global")
@@ -175,7 +182,7 @@ else:
                 st.rerun()
 
         with st.container(border=True):
-            t1, t2 = st.columns([3, 1])
+            t1, t2 = st.columns(2)
             with t1: st.progress((idx + 1) / tot, text=f"Desafio {idx + 1}/{tot}")
             with t2: timer_q()
             esc = st.radio(q["pergunta"], st.session_state.ops, key=f"r_{qid}", disabled=st.session_state.resp)
@@ -188,12 +195,12 @@ else:
                         g = 15 + min(15, (st.session_state.combo - 1) * 3)
                         st.session_state.xp += g
                         st.session_state.fb_tipo = "acerto"
-                        st.session_state.fb_msg = f"Correto! {q['explicacao']} (+{g} XP)"
+                        st.session_state.fb_msg = f"Correto! {q.get('explicacao', '')} (+{g} XP)"
                     else:
                         st.session_state.combo = 0
                         st.session_state.xp = max(0, st.session_state.xp - 10)
                         st.session_state.fb_tipo = "erro"
-                        st.session_state.fb_msg = f"Errado! Correta: {st.session_state.certa} (-10 XP). {q['explicacao']}"
+                        st.session_state.fb_msg = f"Errado! Correta: {st.session_state.certa} (-10 XP). {q.get('explicacao', '')}"
                     salvar()
                     st.rerun()
             with b2:
