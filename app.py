@@ -34,11 +34,44 @@ ANIM_CERTO = None
 ANIM_ERRADO = None
 
 st.markdown("""
+<div class="fundo-animado-heroi"></div>
 <style>
 @keyframes fundoHeroi {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
+}
+
+.fundo-animado-heroi {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(125deg, #030A18 0%, #0B2C59 35%, #0077B6 65%, #04132B 100%);
+    background-size: 300% 300%;
+    animation: fundoHeroi 10s ease infinite;
+}
+
+.stApp,
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+[data-testid="stHeader"] {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+[data-testid="stMainBlockContainer"] {
+    position: relative;
+    z-index: 1;
+}
+
+[data-testid="stSidebar"], [data-testid="stSidebarContent"] {
+    background-color: rgba(4, 12, 26, 0.82) !important;
+    border-right: 1px solid rgba(0, 240, 255, 0.35);
+    backdrop-filter: blur(8px);
 }
 
 @keyframes pulsarAcerto {
@@ -55,26 +88,6 @@ st.markdown("""
 
 [data-testid="stAlert"] {
     animation: pulsarAcerto 0.8s ease-out, tremerErro 0.35s ease-in-out;
-}
-
-html, body, [data-testid="stApp"], .stApp {
-    background: linear-gradient(135deg, #030B1C 0%, #0A2E5C 35%, #006699 70%, #051630 100%) !important;
-    background-size: 300% 300% !important;
-    animation: fundoHeroi 10s ease infinite !important;
-}
-
-[data-testid="stAppViewContainer"],
-[data-testid="stMain"],
-[data-testid="stMainBlockContainer"],
-[data-testid="stHeader"] {
-    background: transparent !important;
-    background-color: transparent !important;
-}
-
-[data-testid="stSidebar"], [data-testid="stSidebarContent"] {
-    background-color: rgba(4, 12, 26, 0.82) !important;
-    border-right: 1px solid rgba(0, 240, 255, 0.35);
-    backdrop-filter: blur(8px);
 }
 
 div.stButton > button {
