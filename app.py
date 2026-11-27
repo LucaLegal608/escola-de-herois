@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import random
 import time
+from streamlit_local_storage import LocalStorage
 
 st.set_page_config(page_title="Escola de Heróis", page_icon=":material/shield:", layout="wide")
 
@@ -40,7 +41,8 @@ def carregar_dados():
 
 for k, v in {
     "xp": 0, "combo": 0, "idx": 0, "t0": time.time(),
-    "resp": False, "fb_tipo": None, "fb_msg": "",
+    "nome_salvo": "Novato", "esq_salvo": "Cadetes (6 a 10 anos)",
+    "carregado": False, "resp": False, "fb_tipo": None, "fb_msg": "",
     "q_id": "", "certa": "", "ops": [],
     "ar_on": False, "ar_t0": 0.0, "ar_pts": 0, "ar_q": None
 }.items():
@@ -49,29 +51,64 @@ for k, v in {
 
 df = carregar_dados()
 
-st.sidebar.markdown("## :material/shield: Escola de Heróis")
-nome = st.sidebar.text_input("Codinome:", "Novato")
-esq = st.sidebar.selectbox("Esquadrão:", ["Cadetes (6 a 10 anos)", "Guardiões (11 a 16 anos)"])
-f_esq = "cadet" if "Cadetes" in esq else "guard"
+with st.sidebar:
+    st.markdown("## :material/shield: Escola de Heróis")
+    nome = st.text_input("Codinome:", value=st.session_state.nome_salvo)
+    op_esq = ["Cadetes (6 a 10 anos)", "Guardiões (11 a 16 anos)"]
+    idx_e = op_esq.index(st.session_state.esq_salvo) if st.session_state.esq_salvo in op_esq else 0
+    esq = st.selectbox("Esquadrão:", op_esq, index=idx_e)
+    f_esq = "cadet" if "Cadetes" in esq else "guard"
 
-def salvar():
-    if nome.strip():
-        arena["ranking"][nome.strip()] = {
-            "Herói": nome.strip(),
-            "Esquadrão": "Cadetes" if "Cadetes" in esq else "Guardiões",
-            "Patente": patente(st.session_state.xp),
-            "XP": st.session_state.xp,
-            "Combo": st.session_state.combo
-        }
+    st.metric("XP", st.session_state.xp, delta=f"Combo {st.session_state.combo}x")
+    st.info(f"**Patente:** {patente(st.session_state.xp)}", icon=":material/military_tech:")
 
-st.sidebar.metric("XP", st.session_state.xp, delta=f"Combo {st.session_state.combo}x")
-st.sidebar.info(f"**Patente:** {patente(st.session_state.xp)}", icon=":material/military_tech:")
+    menu = st.radio("Missões:", [
+        "Arena Online: Desafio 60s", "Ranking Global Online",
+        "Defesa Pessoal", "Segurança Digital", "Lógica",
+        "Argumentação", "Prototipagem Eletrônica", "Outras Matérias"
+    ])
 
-menu = st.sidebar.radio("Missões:", [
-    "Arena Online: Desafio 60s", "Ranking Global Online",
-    "Defesa Pessoal", "Segurança Digital", "Lógica",
-    "Argumentação", "Prototipagem Eletrônica", "Outras Matérias"
-])
+    st.markdown("---")
+    localS = LocalStorage()
+    dados_salvos = localS.getItem("escola_herois_save")
+
+    if isinstance(dados_salvos, dict) and not st.session_state.carregado:
+        st.session_state.xp = int(dados_salvos.get("xp", 0))
+        st.session_state.idx = int(dados_salvos.get("idx", 0))
+        st.session_state.nome_salvo = str(dados_salvos.get("nome", "Novato"))
+        st.session_state.esq_salvo = str(dados_salvos.get("esq", "Cadetes (6 a 10 anos)"))
+        st.session_state.carregado = True
+        st.rerun()
+
+    def salvar():
+        st.session_state.nome_salvo = nome
+        st.session_state.esq_salvo = esq
+        localS.setItem("escola_herois_save", {
+            "nome": nome,
+            "esq": esq,
+            "xp": st.session_state.xp,
+            "idx": st.session_state.idx
+        })
+        if nome.strip():
+            arena["ranking"][nome.strip()] = {
+                "Herói": nome.strip(),
+                "Esquadrão": "Cadetes" if "Cadetes" in esq else "Guardiões",
+                "Patente": patente(st.session_state.xp),
+                "XP": st.session_state.xp,
+                "Combo": st.session_state.combo
+            }
+
+    if nome != st.session_state.nome_salvo or esq != st.session_state.esq_salvo:
+        st.session_state.carregado = True
+        salvar()
+
+    if st.button("Zerar Progresso", icon=":material/delete:"):
+        st.session_state.xp = 0
+        st.session_state.combo = 0
+        st.session_state.idx = 0
+        st.session_state.nome_salvo = "Novato"
+        localS.deleteAll()
+        st.rerun()
 
 if menu == "Arena Online: Desafio 60s":
     st.markdown(f"## :material/sports_esports: Arena 60s — {esq}")
@@ -120,6 +157,7 @@ if menu == "Arena Online: Desafio 60s":
                             else:
                                 st.session_state.ar_pts = max(0, st.session_state.ar_pts - 5)
                                 st.session_state.xp = max(0, st.session_state.xp - 5)
+                            salvar()
                             st.session_state.ar_q = next(iter(sub.sample(1).to_dict(orient="records")))
                             st.rerun()
             else:
@@ -128,7 +166,14 @@ if menu == "Arena Online: Desafio 60s":
 
 elif menu == "Ranking Global Online":
     st.markdown("## :material/leaderboard: Ranking Global")
-    salvar()
+    if nome.strip():
+        arena["ranking"][nome.strip()] = {
+            "Herói": nome.strip(),
+            "Esquadrão": "Cadetes" if "Cadetes" in esq else "Guardiões",
+            "Patente": patente(st.session_state.xp),
+            "XP": st.session_state.xp,
+            "Combo": st.session_state.combo
+        }
     c1, c2 = st.columns(2)
     with c1:
         st.subheader("Top XP")
@@ -208,20 +253,3 @@ else:
                     st.session_state.idx += 1
                     salvar()
                     st.rerun()
-            if st.session_state.fb_tipo == "acerto":
-                st.success(st.session_state.fb_msg, icon=":material/verified:")
-            elif st.session_state.fb_tipo == "erro":
-                st.error(st.session_state.fb_msg, icon=":material/warning:")
-
-st.markdown("""
-<style>
-@keyframes fundoHeroi { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-.stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"] { background: linear-gradient(125deg, #030A18 0%, #0B2C59 35%, #0077B6 65%, #04132B 100%) !important; background-size: 300% 300% !important; animation: fundoHeroi 10s ease infinite !important; }
-[data-testid="stHeader"] { background: transparent !important; height: 1rem !important; }
-[data-testid="stMainBlockContainer"] { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
-[data-testid="stSidebar"] { background-color: rgba(4, 12, 26, 0.85) !important; border-right: 1px solid rgba(0, 240, 255, 0.35); }
-div.stButton > button { background: linear-gradient(135deg, #0052D4, #0088FF); color: #FFF; border: 1px solid #00F0FF; border-radius: 12px; font-weight: bold; box-shadow: 0 0 12px rgba(0, 240, 255, 0.55); }
-div.stButton > button:hover { box-shadow: 0 0 22px rgba(0, 240, 255, 0.95); transform: scale(1.02); }
-div[data-testid="stVerticalBlockBorderWrapper"] { border: 1.5px solid #00F0FF !important; border-radius: 16px !important; box-shadow: 0 0 18px rgba(0, 240, 255, 0.25) !important; background-color: rgba(7, 17, 36, 0.85) !important; }
-</style>
-""", unsafe_allow_html=True)
