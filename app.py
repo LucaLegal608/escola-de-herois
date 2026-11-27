@@ -64,21 +64,28 @@ st.markdown("""
 }
 
 [data-testid="stHeader"] {
-    height: 2rem !important;
+    height: 1.5rem !important;
 }
 
+div[data-testid="stElementContainer"]:has(.fundo-animado-heroi),
+div[data-testid="stElementContainer"]:has(iframe[title*="local_storage"]),
+div[data-testid="stElementContainer"]:has(iframe[height="0"]) {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.block-container,
 [data-testid="stMainBlockContainer"] {
     position: relative;
     z-index: 1;
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
 }
 
-div[data-testid="stElementContainer"]:has(.fundo-animado-heroi) {
-    margin: 0 !important;
-    padding: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
+[data-testid="stVerticalBlock"] {
+    gap: 0.5rem !important;
 }
 
 [data-testid="stSidebar"], [data-testid="stSidebarContent"] {
@@ -345,3 +352,113 @@ elif menu == "Ranking Global Online":
             st.dataframe(df_rec, use_container_width=True)
         else:
             st.info("Nenhuma partida de 60s finalizada ainda!", icon=":material/sports_esports:")
+
+else:
+    st.markdown(f"## :material/bolt: {menu} — {esquadrao_sel}")
+    st.caption(f"Herói: **{nome_heroi}** | Patente: **{patente_atual}** | Combo: **{st.session_state.combo}x**")
+
+    if df_perguntas.empty:
+        st.error("Nenhum arquivo CSV encontrado na raiz do repositório.", icon=":material/error:")
+    else:
+        prefixo_missao = menu[:3].lower()
+        sub_df = df_perguntas[
+            (df_perguntas["esquadrao"].str.lower().str.startswith(filtro_esq)) &
+            (df_perguntas["missao"].str.lower().str.startswith(prefixo_missao))
+        ].reset_index(drop=True)
+
+        if sub_df.empty:
+            st.warning(f"Nenhuma pergunta encontrada para {esquadrao_sel} em {menu}.", icon=":material/info:")
+        else:
+            total = len(sub_df)
+            idx = st.session_state.indice_q % total
+            q = sub_df.iloc[idx]
+            id_questao = f"{menu}_{filtro_esq}_{idx}"
+
+            if st.session_state.chave_atual != id_questao:
+                st.session_state.chave_atual = id_questao
+                st.session_state.inicio_tempo = time.time()
+                st.session_state.respondida = False
+                st.session_state.feedback_tipo = None
+
+                correta_orig = str(q["correta"]).strip()
+                todas_op = [str(q["opcao1"]).strip(), str(q["opcao2"]).strip(), str(q["opcao3"]).strip()]
+                erradas_orig = [op for op in todas_op if op != correta_orig and op != "nan"]
+
+                if "opcao4" in q and pd.notna(q["opcao4"]) and str(q["opcao4"]).strip() not in ["", "nan", correta_orig]:
+                    quarta_op = str(q["opcao4"]).strip()
+                else:
+                    candidatas = pd.concat([sub_df["opcao1"], sub_df["opcao2"], sub_df["opcao3"]]).dropna().astype(str).str.strip().unique().tolist()
+                    candidatas_validas = [c for c in candidatas if c not in todas_op and c != correta_orig and c != "nan"]
+                    quarta_op = random.choice(candidatas_validas) if candidatas_validas else "Consultar um adulto responsável ou professor"
+
+                op_lista = [correta_orig] + erradas_orig[:2] + [quarta_op]
+                st.session_state.resposta_certa_atual = correta_orig
+
+                random.shuffle(op_lista)
+                letras = ["a)", "b)", "c)", "d)"]
+                st.session_state.opcoes_formatadas = [f"{letras[i]} {op_lista[i]}" for i in range(4)]
+
+            @st.fragment(run_every=1)
+            def exibir_cronometro():
+                tempo_limite = 30
+                restante = max(0, int(tempo_limite - (time.time() - st.session_state.inicio_tempo)))
+                if restante > 0 and not st.session_state.respondida:
+                    st.info(f"Tempo: **{restante}s**", icon=":material/timer:")
+                elif restante == 0 and not st.session_state.respondida:
+                    st.session_state.respondida = True
+                    st.session_state.combo = 0
+                    st.session_state.xp = max(0, st.session_state.xp - 10)
+                    salvar_progresso(nome_heroi, esquadrao_sel)
+                    st.session_state.feedback_tipo = "erro"
+                    st.session_state.feedback_msg = f"Tempo esgotado! A resposta certa era: {st.session_state.resposta_certa_atual} (-10 XP)"
+                    st.rerun()
+
+            with st.container(border=True):
+                col_top1, col_top2 = st.columns(2)
+                with col_top1:
+                    st.progress((idx + 1) / total, text=f"Desafio {idx + 1} de {total}")
+                with col_top2:
+                    exibir_cronometro()
+
+                escolha = st.radio(q["pergunta"], st.session_state.opcoes_formatadas, key=f"rad_{id_questao}", disabled=st.session_state.respondida)
+
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("Confirmar Resposta", icon=":material/check_circle:", disabled=st.session_state.respondida):
+                        st.session_state.respondida = True
+                        texto_escolhido = escolha[3:].strip()
+                        correta_da_vez = st.session_state.resposta_certa_atual
+                        if texto_escolhido == correta_da_vez:
+                            st.session_state.combo += 1
+                            bonus = min(15, (st.session_state.combo - 1) * 3)
+                            ganho = 15 + bonus
+                            st.session_state.xp += ganho
+                            st.session_state.feedback_tipo = "acerto"
+                            st.session_state.feedback_msg = f"Excelente! {q['explicacao']} (+{ganho} XP | Combo {st.session_state.combo}x)"
+                        else:
+                            st.session_state.combo = 0
+                            st.session_state.xp = max(0, st.session_state.xp - 10)
+                            st.session_state.feedback_tipo = "erro"
+                            st.session_state.feedback_msg = f"Resposta incorreta! A correta era: {correta_da_vez} (-10 XP). {q['explicacao']}"
+                        salvar_progresso(nome_heroi, esquadrao_sel)
+                        st.rerun()
+                with col2:
+                    if st.button("Próxima Pergunta", icon=":material/arrow_forward:"):
+                        st.session_state.indice_q += 1
+                        salvar_progresso(nome_heroi, esquadrao_sel)
+                        st.rerun()
+
+                if st.session_state.feedback_tipo == "acerto":
+                    col_f1, col_f2 = st.columns(2)
+                    with col_f1:
+                        st.success(st.session_state.feedback_msg, icon=":material/verified:")
+                    with col_f2:
+                        if ANIM_CERTO:
+                            st_lottie(ANIM_CERTO, height=110, key=f"ok_{id_questao}")
+                elif st.session_state.feedback_tipo == "erro":
+                    col_f1, col_f2 = st.columns(2)
+                    with col_f1:
+                        st.error(st.session_state.feedback_msg, icon=":material/warning:")
+                    with col_f2:
+                        if ANIM_ERRADO:
+                            st_lottie(ANIM_ERRADO, height=110, key=f"err_{id_questao}")
