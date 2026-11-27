@@ -345,5 +345,3 @@ elif menu == "Ranking Global Online":
             st.dataframe(df_rec, use_container_width=True)
         else:
             st.info("Nenhuma partida de 60s finalizada ainda!", icon=":material/sports_esports:")
-
-else:
