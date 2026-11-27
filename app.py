@@ -38,11 +38,33 @@ def carregar_animacao(url):
     except Exception:
         return None
 
-ANIM_CERTO = carregar_animacao("https://lottie.host")
-ANIM_ERRADO = carregar_animacao("https://lottie.host")
+ANIM_CERTO = {"v":"5.5.7","fr":30,"ip":0,"op":30,"w":100,"h":100,"nm":"ok","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"c","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":0,"k":[50,50,0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":1,"k":[{"t":0,"s":[0,0,100]},{"t":15,"s":[110,110,100]},{"t":25,"s":[100,100,100]}]}},"shapes":[{"ty":"el","p":{"a":0,"k":[0,0]},"s":{"a":0,"k":[70,70]}},{"ty":"fl","c":{"a":0,"k":[0,0.94,1,1]},"o":{"a":0,"k":100}}]}]}
+ANIM_ERRADO = {"v":"5.5.7","fr":30,"ip":0,"op":30,"w":100,"h":100,"nm":"err","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"x","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":1,"k":[{"t":0,"s":[-15]},{"t":10,"s":[15]},{"t":20,"s":[-10]},{"t":30,"s":[0]}]},"p":{"a":0,"k":[50,50,0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"shapes":[{"ty":"rc","p":{"a":0,"k":[0,0]},"s":{"a":0,"k":[65,65]},"r":{"a":0,"k":12}},{"ty":"fl","c":{"a":0,"k":[1,0.25,0.35,1]},"o":{"a":0,"k":100}}]}]}
+
 
 st.markdown("""
 <style>
+@keyframes fundoHeroi {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+[data-testid="stAppViewContainer"] {
+    background: linear-gradient(-45deg, #050A14, #0A1833, #07223B, #061024);
+    background-size: 350% 350%;
+    animation: fundoHeroi 18s ease infinite;
+}
+
+[data-testid="stHeader"] {
+    background: rgba(0, 0, 0, 0);
+}
+
+[data-testid="stSidebar"] {
+    background-color: rgba(8, 16, 32, 0.88);
+    border-right: 1px solid rgba(0, 240, 255, 0.25);
+}
+
 div.stButton > button {
     background: linear-gradient(135deg, #0052D4, #0088FF);
     color: #FFFFFF;
@@ -63,7 +85,8 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     border: 1.5px solid #00F0FF !important;
     border-radius: 16px !important;
     box-shadow: 0 0 18px rgba(0, 240, 255, 0.25) !important;
-    background-color: #0B1528 !important;
+    background-color: rgba(11, 21, 40, 0.85) !important;
+    backdrop-filter: blur(6px);
 }
 </style>
 """, unsafe_allow_html=True)
