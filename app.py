@@ -63,9 +63,22 @@ st.markdown("""
     background-color: transparent !important;
 }
 
+[data-testid="stHeader"] {
+    height: 2rem !important;
+}
+
 [data-testid="stMainBlockContainer"] {
     position: relative;
     z-index: 1;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+}
+
+div[data-testid="stElementContainer"]:has(.fundo-animado-heroi) {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
 }
 
 [data-testid="stSidebar"], [data-testid="stSidebarContent"] {
@@ -232,8 +245,7 @@ if st.sidebar.button("Zerar Progresso Salvo", icon=":material/delete:"):
     st.rerun()
 
 if menu == "Arena Online: Desafio 60s":
-    st.markdown(f"# :material/sports_esports: Arena Relâmpago Online — {esquadrao_sel}")
-    st.write("Responda o máximo de perguntas mistas em **60 segundos** para disputar o placar online!")
+    st.markdown(f"## :material/sports_esports: Arena Relâmpago Online — {esquadrao_sel}")
     sub_esq = df_perguntas[df_perguntas["esquadrao"].str.lower().str.startswith(filtro_esq)].reset_index(drop=True)
 
     if sub_esq.empty:
@@ -269,7 +281,7 @@ if menu == "Arena Online: Desafio 60s":
             q_ar = st.session_state.relampago_q
             if isinstance(q_ar, dict):
                 st.caption(f"Categoria: **{q_ar['missao']}**")
-                st.subheader(q_ar["pergunta"])
+                st.markdown(f"#### {q_ar['pergunta']}")
 
                 correta_ar = str(q_ar["correta"]).strip()
                 ops_ar = [str(q_ar["opcao1"]).strip(), str(q_ar["opcao2"]).strip(), str(q_ar["opcao3"]).strip()]
@@ -281,22 +293,25 @@ if menu == "Arena Online: Desafio 60s":
                 letras = ["a)", "b)", "c)", "d)"]
                 ops_fmt = [f"{letras[i]} {ops_ar[i]}" for i in range(4)]
 
-                for op_texto in ops_fmt:
-                    if st.button(op_texto, key=f"ar_{q_ar['pergunta']}_{op_texto}"):
-                        if op_texto[3:].strip() == correta_ar:
-                            st.session_state.relampago_pontos += 10
-                            st.session_state.xp += 10
-                        else:
-                            st.session_state.relampago_pontos = max(0, st.session_state.relampago_pontos - 5)
-                            st.session_state.xp = max(0, st.session_state.xp - 5)
-                        st.session_state.relampago_q = next(iter(sub_esq.sample(1).to_dict(orient="records")))
-                        st.rerun()
+                col_ar1, col_ar2 = st.columns(2)
+                for idx_op, op_texto in enumerate(ops_fmt):
+                    coluna_destino = col_ar1 if idx_op % 2 == 0 else col_ar2
+                    with coluna_destino:
+                        if st.button(op_texto, key=f"ar_{q_ar['pergunta']}_{op_texto}", use_container_width=True):
+                            if op_texto[3:].strip() == correta_ar:
+                                st.session_state.relampago_pontos += 10
+                                st.session_state.xp += 10
+                            else:
+                                st.session_state.relampago_pontos = max(0, st.session_state.relampago_pontos - 5)
+                                st.session_state.xp = max(0, st.session_state.xp - 5)
+                            st.session_state.relampago_q = next(iter(sub_esq.sample(1).to_dict(orient="records")))
+                            st.rerun()
             else:
                 st.session_state.relampago_ativo = False
                 st.rerun()
 
 elif menu == "Ranking Global Online":
-    st.markdown("# :material/leaderboard: Ranking Global em Tempo Real")
+    st.markdown("## :material/leaderboard: Ranking Global em Tempo Real")
     st.write("Veja a classificação dos jogadores conectados na Escola de Heróis!")
 
     if nome_heroi.strip():
@@ -317,22 +332,8 @@ elif menu == "Ranking Global Online":
         st.subheader(":material/military_tech: Top XP Geral")
         if arena["ranking"]:
             df_rank = pd.DataFrame(list(arena["ranking"].values())).sort_values(by="XP", ascending=False).reset_index(drop=True)
-            df_rank.index = df_rank.index + 1
-            st.dataframe(df_rank, use_container_width=True)
-        else:
-            st.info("Responda a uma missão para registrar seu nome no placar!", icon=":material/info:")
-
-    with col_r2:
-        st.subheader(":material/bolt: Recordes da Arena 60s")
-        if arena["recordes_relampago"]:
-            df_rec = pd.DataFrame(arena["recordes_relampago"]).sort_values(by="Pontos (60s)", ascending=False).head(10).reset_index(drop=True)
-            df_rec.index = df_rec.index + 1
-            st.dataframe(df_rec, use_container_width=True)
-        else:
-            st.info("Nenhuma partida de 60s finalizada ainda!", icon=":material/sports_esports:")
-
-else:
-    st.markdown(f"# :material/bolt: {menu} — {esquadrao_sel}")
+            df_rank.index = df_rank.index + 1else:
+    st.markdown(f"## :material/bolt: {menu} — {esquadrao_sel}")
     st.caption(f"Herói: **{nome_heroi}** | Patente: **{patente_atual}** | Combo: **{st.session_state.combo}x**")
 
     if df_perguntas.empty:
@@ -440,3 +441,17 @@ else:
                     with col_f2:
                         if ANIM_ERRADO:
                             st_lottie(ANIM_ERRADO, height=110, key=f"err_{id_questao}")
+
+            st.dataframe(df_rank, use_container_width=True)
+        else:
+            st.info("Responda a uma missão para registrar seu nome no placar!", icon=":material/info:")
+
+    with col_r2:
+        st.subheader(":material/bolt: Recordes da Arena 60s")
+        if arena["recordes_relampago"]:
+            df_rec = pd.DataFrame(arena["recordes_relampago"]).sort_values(by="Pontos (60s)", ascending=False).head(10).reset_index(drop=True)
+            df_rec.index = df_rec.index + 1
+            st.dataframe(df_rec, use_container_width=True)
+        else:
+            st.info("Nenhuma partida de 60s finalizada ainda!", icon=":material/sports_esports:")
+
