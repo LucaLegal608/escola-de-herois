@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import random
 import time
-import requests
 from streamlit_lottie import st_lottie
 from streamlit_local_storage import LocalStorage
 
@@ -31,16 +30,8 @@ def calcular_patente(xp):
         return "Aprendiz de Herói"
     return "Recruta"
 
-def carregar_animacao(url):
-    try:
-        r = requests.get(url, timeout=4)
-        return r.json() if r.status_code == 200 else None
-    except Exception:
-        return None
-
-ANIM_CERTO = {"v":"5.5.7","fr":30,"ip":0,"op":30,"w":100,"h":100,"nm":"ok","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"c","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":0,"k":[50,50,0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":1,"k":[{"t":0,"s":[0,0,100]},{"t":15,"s":[110,110,100]},{"t":25,"s":[100,100,100]}]}},"shapes":[{"ty":"el","p":{"a":0,"k":[0,0]},"s":{"a":0,"k":[70,70]}},{"ty":"fl","c":{"a":0,"k":[0,0.94,1,1]},"o":{"a":0,"k":100}}]}]}
-ANIM_ERRADO = {"v":"5.5.7","fr":30,"ip":0,"op":30,"w":100,"h":100,"nm":"err","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"x","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":1,"k":[{"t":0,"s":[-15]},{"t":10,"s":[15]},{"t":20,"s":[-10]},{"t":30,"s":[0]}]},"p":{"a":0,"k":[50,50,0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"shapes":[{"ty":"rc","p":{"a":0,"k":[0,0]},"s":{"a":0,"k":[65,65]},"r":{"a":0,"k":12}},{"ty":"fl","c":{"a":0,"k":[1,0.25,0.35,1]},"o":{"a":0,"k":100}}]}]}
-
+ANIM_CERTO = {"v":"5.5.7","fr":30,"ip":0,"op":30,"w":100,"h":100,"nm":"ok","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"c","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":0,"k":},"a":{"a":0,"k":},"s":{"a":1,"k":[{"t":0,"s":},{"t":15,"s":},{"t":25,"s":}]}},"shapes":[{"ty":"el","p":{"a":0,"k":},"s":{"a":0,"k":}},{"ty":"fl","c":{"a":0,"k":[0,0.94,1,1]},"o":{"a":0,"k":100}}]}]}
+ANIM_ERRADO = {"v":"5.5.7","fr":30,"ip":0,"op":30,"w":100,"h":100,"nm":"err","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"x","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":1,"k":[{"t":0,"s":[-15]},{"t":10,"s":},{"t":20,"s":[-10]},{"t":30,"s":}]},"p":{"a":0,"k":},"a":{"a":0,"k":},"s":{"a":0,"k":}},"shapes":[{"ty":"rc","p":{"a":0,"k":},"s":{"a":0,"k":},"r":{"a":0,"k":12}},{"ty":"fl","c":{"a":0,"k":[1,0.25,0.35,1]},"o":{"a":0,"k":100}}]}]}
 
 st.markdown("""
 <style>
@@ -50,19 +41,20 @@ st.markdown("""
     100% { background-position: 0% 50%; }
 }
 
-[data-testid="stAppViewContainer"] {
-    background: linear-gradient(-45deg, #050A14, #0A1833, #07223B, #061024);
-    background-size: 350% 350%;
-    animation: fundoHeroi 18s ease infinite;
+.stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
+    background: linear-gradient(-45deg, #040B1A, #0D2B52, #004E89, #091E3A) !important;
+    background-size: 300% 300% !important;
+    animation: fundoHeroi 12s ease infinite !important;
 }
 
 [data-testid="stHeader"] {
-    background: rgba(0, 0, 0, 0);
+    background: transparent !important;
 }
 
 [data-testid="stSidebar"] {
-    background-color: rgba(8, 16, 32, 0.88);
-    border-right: 1px solid rgba(0, 240, 255, 0.25);
+    background-color: rgba(5, 13, 28, 0.85) !important;
+    border-right: 1px solid rgba(0, 240, 255, 0.35);
+    backdrop-filter: blur(8px);
 }
 
 div.stButton > button {
