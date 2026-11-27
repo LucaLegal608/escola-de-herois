@@ -30,8 +30,8 @@ def calcular_patente(xp):
         return "Aprendiz de Herói"
     return "Recruta"
 
-ANIM_CERTO = {"v":"5.5.7","fr":30,"ip":0,"op":30,"w":100,"h":100,"nm":"ok","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"c","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":0,"k":},"a":{"a":0,"k":},"s":{"a":1,"k":[{"t":0,"s":},{"t":15,"s":},{"t":25,"s":}]}},"shapes":[{"ty":"el","p":{"a":0,"k":},"s":{"a":0,"k":}},{"ty":"fl","c":{"a":0,"k":[0,0.94,1,1]},"o":{"a":0,"k":100}}]}]}
-ANIM_ERRADO = {"v":"5.5.7","fr":30,"ip":0,"op":30,"w":100,"h":100,"nm":"err","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"x","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":1,"k":[{"t":0,"s":[-15]},{"t":10,"s":},{"t":20,"s":[-10]},{"t":30,"s":}]},"p":{"a":0,"k":},"a":{"a":0,"k":},"s":{"a":0,"k":}},"shapes":[{"ty":"rc","p":{"a":0,"k":},"s":{"a":0,"k":},"r":{"a":0,"k":12}},{"ty":"fl","c":{"a":0,"k":[1,0.25,0.35,1]},"o":{"a":0,"k":100}}]}]}
+ANIM_CERTO = None
+ANIM_ERRADO = None
 
 st.markdown("""
 <style>
@@ -39,6 +39,22 @@ st.markdown("""
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
+}
+
+@keyframes pulsarAcerto {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7); }
+    70% { transform: scale(1.01); box-shadow: 0 0 18px 8px rgba(0, 240, 255, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
+}
+
+@keyframes tremerErro {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+}
+
+[data-testid="stAlert"] {
+    animation: pulsarAcerto 0.8s ease-out, tremerErro 0.35s ease-in-out;
 }
 
 .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
@@ -67,12 +83,14 @@ div.stButton > button {
     box-shadow: 0 0 12px rgba(0, 240, 255, 0.55);
     transition: all 0.25s ease;
 }
+
 div.stButton > button:hover {
     background: linear-gradient(135deg, #0066FF, #00C6FF);
     box-shadow: 0 0 22px rgba(0, 240, 255, 0.95);
     transform: scale(1.03);
     border-color: #FFFFFF;
 }
+
 div[data-testid="stVerticalBlockBorderWrapper"] {
     border: 1.5px solid #00F0FF !important;
     border-radius: 16px !important;
@@ -82,6 +100,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 def ler_csv_seguro(nome_arquivo):
     for enc in ["utf-8", "utf-8-sig", "latin-1"]:
