@@ -57,18 +57,22 @@ st.markdown("""
     animation: pulsarAcerto 0.8s ease-out, tremerErro 0.35s ease-in-out;
 }
 
-.stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
-    background: linear-gradient(-45deg, #040B1A, #0D2B52, #004E89, #091E3A) !important;
+html, body, [data-testid="stApp"], .stApp {
+    background: linear-gradient(135deg, #030B1C 0%, #0A2E5C 35%, #006699 70%, #051630 100%) !important;
     background-size: 300% 300% !important;
-    animation: fundoHeroi 12s ease infinite !important;
+    animation: fundoHeroi 10s ease infinite !important;
 }
 
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+[data-testid="stMainBlockContainer"],
 [data-testid="stHeader"] {
     background: transparent !important;
+    background-color: transparent !important;
 }
 
-[data-testid="stSidebar"] {
-    background-color: rgba(5, 13, 28, 0.85) !important;
+[data-testid="stSidebar"], [data-testid="stSidebarContent"] {
+    background-color: rgba(4, 12, 26, 0.82) !important;
     border-right: 1px solid rgba(0, 240, 255, 0.35);
     backdrop-filter: blur(8px);
 }
@@ -95,12 +99,11 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     border: 1.5px solid #00F0FF !important;
     border-radius: 16px !important;
     box-shadow: 0 0 18px rgba(0, 240, 255, 0.25) !important;
-    background-color: rgba(11, 21, 40, 0.85) !important;
+    background-color: rgba(7, 17, 36, 0.82) !important;
     backdrop-filter: blur(6px);
 }
 </style>
 """, unsafe_allow_html=True)
-
 
 def ler_csv_seguro(nome_arquivo):
     for enc in ["utf-8", "utf-8-sig", "latin-1"]:
