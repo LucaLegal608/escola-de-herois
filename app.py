@@ -2,13 +2,14 @@ import streamlit as st
 import pandas as pd
 import random
 import time
+import json
 from streamlit_local_storage import LocalStorage
 
 st.set_page_config(page_title="Escola de Heróis", page_icon=":material/shield:", layout="wide")
 
 @st.cache_resource
 def obter_arena():
-    return {"ranking": {}, "recordes": []}
+    return {"ranking": {}, "recordes": [], "perfis": {}}
 
 arena = obter_arena()
 
@@ -42,7 +43,7 @@ def carregar_dados():
 for k, v in {
     "xp": 0, "combo": 0, "idx": 0, "t0": time.time(),
     "nome_salvo": "Novato", "esq_salvo": "Cadetes (6 a 10 anos)",
-    "carregado": False, "resp": False, "fb_tipo": None, "fb_msg": "",
+    "sincronizado": False, "resp": False, "fb_tipo": None, "fb_msg": "",
     "q_id": "", "certa": "", "ops": [],
     "ar_on": False, "ar_t0": 0.0, "ar_pts": 0, "ar_q": None
 }.items():
@@ -53,11 +54,54 @@ df = carregar_dados()
 
 with st.sidebar:
     st.markdown("## :material/shield: Escola de Heróis")
+    localS = LocalStorage()
+    bruto = localS.getItem("heroi_perfil_v2")
+
+    if bruto and not st.session_state.sincronizado:
+        try:
+            dados = json.loads(bruto) if isinstance(bruto, str) else bruto
+            if isinstance(dados, dict):
+                st.session_state.nome_salvo = str(dados.get("nome", "Novato"))
+                st.session_state.esq_salvo = str(dados.get("esq", "Cadetes (6 a 10 anos)"))
+                st.session_state.xp = int(dados.get("xp", 0))
+                st.session_state.idx = int(dados.get("idx", 0))
+                st.session_state.sincronizado = True
+                st.rerun()
+        except Exception:
+            pass
+
     nome = st.text_input("Codinome:", value=st.session_state.nome_salvo)
     op_esq = ["Cadetes (6 a 10 anos)", "Guardiões (11 a 16 anos)"]
     idx_e = op_esq.index(st.session_state.esq_salvo) if st.session_state.esq_salvo in op_esq else 0
     esq = st.selectbox("Esquadrão:", op_esq, index=idx_e)
     f_esq = "cadet" if "Cadetes" in esq else "guard"
+
+    # Recupera também do servidor caso o usuário digite o mesmo Codinome em outro aparelho
+    chave_n = nome.strip().lower()
+    if chave_n in arena["perfis"] and not st.session_state.sincronizado and nome.strip() != "Novato":
+        p_srv = arena["perfis"][chave_n]
+        st.session_state.xp = p_srv["xp"]
+        st.session_state.idx = p_srv["idx"]
+        st.session_state.sincronizado = True
+
+    def salvar():
+        st.session_state.nome_salvo = nome
+        st.session_state.esq_salvo = esq
+        st.session_state.sincronizado = True
+        pacote = {"nome": nome, "esq": esq, "xp": st.session_state.xp, "idx": st.session_state.idx}
+        localS.setItem("heroi_perfil_v2", json.dumps(pacote))
+        if nome.strip():
+            arena["perfis"][nome.strip().lower()] = pacote
+            arena["ranking"][nome.strip()] = {
+                "Herói": nome.strip(),
+                "Esquadrão": "Cadetes" if "Cadetes" in esq else "Guardiões",
+                "Patente": patente(st.session_state.xp),
+                "XP": st.session_state.xp,
+                "Combo": st.session_state.combo
+            }
+
+    if nome != st.session_state.nome_salvo or esq != st.session_state.esq_salvo:
+        salvar()
 
     st.metric("XP", st.session_state.xp, delta=f"Combo {st.session_state.combo}x")
     st.info(f"**Patente:** {patente(st.session_state.xp)}", icon=":material/military_tech:")
@@ -69,39 +113,6 @@ with st.sidebar:
     ])
 
     st.markdown("---")
-    localS = LocalStorage()
-    dados_salvos = localS.getItem("escola_herois_save")
-
-    if isinstance(dados_salvos, dict) and not st.session_state.carregado:
-        st.session_state.xp = int(dados_salvos.get("xp", 0))
-        st.session_state.idx = int(dados_salvos.get("idx", 0))
-        st.session_state.nome_salvo = str(dados_salvos.get("nome", "Novato"))
-        st.session_state.esq_salvo = str(dados_salvos.get("esq", "Cadetes (6 a 10 anos)"))
-        st.session_state.carregado = True
-        st.rerun()
-
-    def salvar():
-        st.session_state.nome_salvo = nome
-        st.session_state.esq_salvo = esq
-        localS.setItem("escola_herois_save", {
-            "nome": nome,
-            "esq": esq,
-            "xp": st.session_state.xp,
-            "idx": st.session_state.idx
-        })
-        if nome.strip():
-            arena["ranking"][nome.strip()] = {
-                "Herói": nome.strip(),
-                "Esquadrão": "Cadetes" if "Cadetes" in esq else "Guardiões",
-                "Patente": patente(st.session_state.xp),
-                "XP": st.session_state.xp,
-                "Combo": st.session_state.combo
-            }
-
-    if nome != st.session_state.nome_salvo or esq != st.session_state.esq_salvo:
-        st.session_state.carregado = True
-        salvar()
-
     if st.button("Zerar Progresso", icon=":material/delete:"):
         st.session_state.xp = 0
         st.session_state.combo = 0
@@ -166,14 +177,7 @@ if menu == "Arena Online: Desafio 60s":
 
 elif menu == "Ranking Global Online":
     st.markdown("## :material/leaderboard: Ranking Global")
-    if nome.strip():
-        arena["ranking"][nome.strip()] = {
-            "Herói": nome.strip(),
-            "Esquadrão": "Cadetes" if "Cadetes" in esq else "Guardiões",
-            "Patente": patente(st.session_state.xp),
-            "XP": st.session_state.xp,
-            "Combo": st.session_state.combo
-        }
+    salvar()
     c1, c2 = st.columns(2)
     with c1:
         st.subheader("Top XP")
@@ -245,11 +249,3 @@ else:
                         st.session_state.combo = 0
                         st.session_state.xp = max(0, st.session_state.xp - 10)
                         st.session_state.fb_tipo = "erro"
-                        st.session_state.fb_msg = f"Errado! Correta: {st.session_state.certa} (-10 XP). {q.get('explicacao', '')}"
-                    salvar()
-                    st.rerun()
-            with b2:
-                if st.button("Próxima", icon=":material/arrow_forward:"):
-                    st.session_state.idx += 1
-                    salvar()
-                    st.rerun()
